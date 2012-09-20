@@ -6,11 +6,13 @@
 #include <errno.h>
 #include <assert.h>
 
-#ifdef _DEBUG
-    #include <cstdio>
-    #define TRACE(format, args...) printf("TRACE:%s ", strerror(errno));printf(format, ##args);printf("\n");
-#else
-    #define TRACE(format, args...)
-#endif 
+#ifndef TRACE
+    #ifdef _DEBUG
+        #include <cstdio>
+        #define TRACE(format, args...) printf("TRACE:%s ", strerror(errno));printf(format, ##args);printf("\n");
+    #else
+        #define TRACE(format, args...)
+    #endif 
+#endif
 
 #endif
