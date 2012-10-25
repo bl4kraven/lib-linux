@@ -1,8 +1,9 @@
 #ifndef __CONFIG__
 #define __CONFIG__
 
+#include <cstring>
+#include <cstdlib>
 #include <unistd.h>
-#include <string.h>
 #include <errno.h>
 #include <assert.h>
 

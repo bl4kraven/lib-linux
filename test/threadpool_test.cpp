@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     pool.Run(std::ptr_fun(Print));
     pool.Run(std::ptr_fun(Print));
     pool.Run(std::ptr_fun(Print));
-    sleep(10);
+    sleep(2);
     pool.Stop();
     return 0;
 }

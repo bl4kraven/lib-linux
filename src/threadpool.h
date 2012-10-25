@@ -1,11 +1,14 @@
 #ifndef __THREADPOOL_H__
 #define __THREADPOOL_H__
+// Update:
+// 2012.10.25  use jobqueue instead of semaphore
+
 #include <functional>
-#include <deque>
 #include <vector>
 
 #include "thread_wrap.h"
 #include "Mutex.h"
+#include "jobqueue.h"
 
 class ThreadPool
 {
@@ -38,10 +41,8 @@ class ThreadPool
         bool Take(Task &task);
 
     private:
-        std::deque<Task> m_taskQueue;
+        JobQueue<Task> m_taskQueue;
         std::vector<ThreadTask *> m_threads;
-        Mutex m_mutex;
-        Semaphore m_semaphore; 
         bool m_running;
 };
 #endif

@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "threadpool.h"
 #include "config.h"
 
@@ -57,12 +56,7 @@ void ThreadPool::Start(int numThreads)
 void ThreadPool::Stop()
 {
     m_running = false;
-    // wake up all threads from Take()
-    for (unsigned int i=0; i<m_threads.size(); i++)
-    {
-        m_semaphore.Post();
-    }
-
+    // wait for threads exit
     for (std::vector<ThreadTask *>::iterator it=m_threads.begin(); it!=m_threads.end(); it++)
     {
         (*it)->Wait();
@@ -74,26 +68,11 @@ void ThreadPool::Stop()
 void ThreadPool::Run(Task f)
 {
     assert(m_running && "threadpool is not running");
-    AutoLock lock(m_mutex);
-    m_taskQueue.push_back(f);
-    // add one task
-    m_semaphore.Post();
+    m_taskQueue.Push(f);
 }
 
 bool ThreadPool::Take(Task &task)
 {
-    m_semaphore.Wait();
-    {
-        AutoLock lock(m_mutex);
-        if (!m_taskQueue.empty())
-        {
-            task = m_taskQueue.front();
-            m_taskQueue.pop_front();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    // wait 0.5 second
+    return m_taskQueue.WaitPop(500, task);
 }
