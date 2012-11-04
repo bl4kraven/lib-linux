@@ -2,6 +2,13 @@
 #include "utility.h"
 #include "config.h"
 
+pthread_key_t Thread::s_MainKey;
+
+void Thread::Initialize()
+{
+    ::pthread_key_create(&Thread::s_MainKey, NULL);
+}
+
 Thread::Thread(bool bAutoStart)
 :m_bRelease(false)
 {

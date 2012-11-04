@@ -51,6 +51,5 @@ int main(int argc, char **argv)
     thread5.Wait();
     thread6.Wait();
     thread7.Wait();
-    thread8.Wait();
     return 0;
 }

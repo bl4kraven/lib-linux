@@ -10,11 +10,12 @@ class Utility
         // sleep unit is ms
         static void Sleep(int ms)
         {
-            usleep(ms*1000);
-            //struct timeval tv;
-            //tv.tv_sec = ms / 1000;
-            //tv.tv_usec = (ms % 1000) * 1000;
-            //::select(0, NULL, NULL, NULL, &tv);
+            // don't use usleep, because it's use SIGALRM may be confuse other's alarm signal.
+            //usleep(ms*1000);
+            struct timeval tv;
+            tv.tv_sec = ms / 1000;
+            tv.tv_usec = (ms % 1000) * 1000;
+            ::select(0, NULL, NULL, NULL, &tv);
         }
 
         static std::string Strip(const std::string &str)

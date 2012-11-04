@@ -13,6 +13,9 @@ class Thread
         void Wait();
         pthread_t GetThreadID();
 
+
+        // initizlize thread-specific data
+        static void Initialize();
     protected:
         virtual void Run() =0;
 
@@ -21,6 +24,13 @@ class Thread
         const Thread &operator=(const Thread &);
 
         static void *ThreadFuntion(void *his);
+
+    protected:
+        // thread-specific data for all threads
+        // access by pthread_getspecific and pthread_setspecific
+        // all thread has it's private data.
+        static pthread_key_t    s_MainKey;
+
     private:
         // thread id
         pthread_t m_threadID;
