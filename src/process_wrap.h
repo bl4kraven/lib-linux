@@ -5,34 +5,37 @@
 #include <signal.h>
 #include <sys/types.h>
 
-class Process
+namespace lib_linux
 {
-    public:
-        // Signal handler function
-        typedef void (*SA_HANDLER)(int);
+    class Process
+    {
+        public:
+            // Signal handler function
+            typedef void (*SA_HANDLER)(int);
 
-    public:
-        Process(const char *program, const char *arg);
-        ~Process();
-        
-        // get child process pid
-        pid_t GetPID();
-        // get current process pid
-        pid_t GetPPID();
+        public:
+            Process(const char *program, const char *arg);
+            ~Process();
 
-        // Signal process
-        static bool SigactionSet(int signum, SA_HANDLER handler);
-        static bool SigactionIgnore(int signum);
+            // get child process pid
+            pid_t GetPID();
+            // get current process pid
+            pid_t GetPPID();
 
-        void Kill();
+            // Signal process
+            static bool SigactionSet(int signum, SA_HANDLER handler);
+            static bool SigactionIgnore(int signum);
 
-        bool Wait();
+            void Kill();
 
-    protected:
-        bool CreateProcess(const char *file, const char *arg);
+            bool Wait();
 
-    private:
-        pid_t m_childPID;
-};
+        protected:
+            bool CreateProcess(const char *file, const char *arg);
+
+        private:
+            pid_t m_childPID;
+    };
+}
 
 #endif

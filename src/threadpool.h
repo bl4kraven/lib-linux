@@ -10,14 +10,16 @@
 #include "Mutex.h"
 #include "jobqueue.h"
 
-class ThreadPool
+namespace lib_linux
 {
-    public:
-        typedef std::pointer_to_unary_function<void *, void> Task;
+    class ThreadPool
+    {
+        public:
+            typedef std::pointer_to_unary_function<void *, void> Task;
 
-    protected:
-        // task thread to fetch task from thread pool.
-        class ThreadTask:public Thread
+        protected:
+            // task thread to fetch task from thread pool.
+            class ThreadTask:public Thread
         {
             public:
                 ThreadTask(ThreadPool &pool);
@@ -27,22 +29,23 @@ class ThreadPool
                 ThreadPool &m_pool;
         };
 
-        friend class ThreadTask;
-    public:
-        ThreadPool();
-        ~ThreadPool();
+            friend class ThreadTask;
+        public:
+            ThreadPool();
+            ~ThreadPool();
 
-        void Start(int numThreads);
-        void Stop();
+            void Start(int numThreads);
+            void Stop();
 
-        void Run(Task f);
+            void Run(Task f);
 
-    private:
-        bool Take(Task &task);
+        private:
+            bool Take(Task &task);
 
-    private:
-        JobQueue<Task> m_taskQueue;
-        std::vector<ThreadTask *> m_threads;
-        bool m_running;
-};
+        private:
+            JobQueue<Task> m_taskQueue;
+            std::vector<ThreadTask *> m_threads;
+            bool m_running;
+    };
+}
 #endif

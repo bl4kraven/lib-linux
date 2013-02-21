@@ -2,21 +2,23 @@
 #include <iterator>
 #include "string_parse.h"
 
-
-StringParse::StringParse(const std::string &str)
+namespace lib_linux
 {
-    std::stringstream stream(str);
-    std::copy(std::istream_iterator<std::string>(stream),
-              std::istream_iterator<std::string>(),
-              back_inserter(m_strings));
-}
+    StringParse::StringParse(const std::string &str)
+    {
+        std::stringstream stream(str);
+        std::copy(std::istream_iterator<std::string>(stream),
+                std::istream_iterator<std::string>(),
+                back_inserter(m_strings));
+    }
 
-StringParse::iterator StringParse::begin() const
-{
-    return m_strings.begin();
-}
+    StringParse::iterator StringParse::begin() const
+    {
+        return m_strings.begin();
+    }
 
-StringParse::iterator StringParse::end() const
-{
-    return m_strings.end();
+    StringParse::iterator StringParse::end() const
+    {
+        return m_strings.end();
+    }
 }

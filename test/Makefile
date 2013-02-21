@@ -1,16 +1,16 @@
 CXX=g++
 #CPPFLAGS=-Wall -O2 -DNDEBUG -I../src/
 CPPFLAGS=-Wall -g -D_DEBUG -I../src/
-LDFLAGS=
+LDFLAGS=-L../
 
 # source code root dir
 SOURCE_DIR=../src/
-FILES=$(shell find $(SOURCE_DIR) -name "*.cpp")
-HEADERS=$(shell find $(SOURCE_DIR) -name "*.h")
-LIBS=-lpthread
-DEPEND=
+FILES=
+HEADERS=
+LIBS=-llinux_tool -lpthread
+DEPEND=../liblinux_tool.a
 OBJECTS=$(TARGET).o $(FILES:.cpp=.o) 
-TARGET=thread_wrap_test
+TARGET=stdlog_test
 
 all:$(TARGET) 
 

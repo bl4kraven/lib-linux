@@ -1,7 +1,7 @@
 #include <iostream>
-using namespace std;
-
 #include "getopt_wrap.h"
+using namespace std;
+using namespace lib_linux;
 
 int main(int argc, char *argv[])
 {

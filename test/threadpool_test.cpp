@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <iostream>
-using namespace std;
-
 #include "threadpool.h"
+using namespace std;
+using namespace lib_linux;
 
 void Print(void *pvoid)
 {

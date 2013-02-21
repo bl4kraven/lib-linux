@@ -8,253 +8,256 @@
 #include <stdexcept>
 #include "utility.h"
 
-// simple config file
-// example: 
-// a=b
-// c=d
-class TxtConfigParser
+namespace lib_linux
 {
-    public:
-        typedef std::map<std::string, std::string> key_map;
+    // simple config file
+    // example: 
+    // a=b
+    // c=d
+    class TxtConfigParser
+    {
+        public:
+            typedef std::map<std::string, std::string> key_map;
 
-    public:
-        TxtConfigParser()
-        {
-        }
-
-        std::string Get(std::string &strKey)
-        {
-            if (m_keyMap.count(strKey) > 0)
+        public:
+            TxtConfigParser()
             {
-                return m_keyMap[strKey];
             }
-            else
+
+            std::string Get(std::string &strKey)
             {
-                return std::string("");
-            }
-        }
-
-        void Set(std::string &strKey, std::string &strValue)
-        {
-            m_keyMap[strKey] = strValue;
-        }
-
-        void Input(std::istream &in)
-        {
-            // init 
-            m_keyMap.clear();
-
-            std::string strLine;
-            for (;std::getline(in, strLine);)
-            {
-                strLine = Utility::Strip(strLine);
-                if (!strLine.empty())
+                if (m_keyMap.count(strKey) > 0)
                 {
-                    char prefix = strLine.at(0);
-                    switch (prefix)
+                    return m_keyMap[strKey];
+                }
+                else
+                {
+                    return std::string("");
+                }
+            }
+
+            void Set(std::string &strKey, std::string &strValue)
+            {
+                m_keyMap[strKey] = strValue;
+            }
+
+            void Input(std::istream &in)
+            {
+                // init 
+                m_keyMap.clear();
+
+                std::string strLine;
+                for (;std::getline(in, strLine);)
+                {
+                    strLine = Utility::Strip(strLine);
+                    if (!strLine.empty())
                     {
-                        case ';':
-                        case '#':
-                            break;
-                        default:
-                            {
-                                size_t pos = strLine.find_first_of('=');
-                                if (pos == std::string::npos)
+                        char prefix = strLine.at(0);
+                        switch (prefix)
+                        {
+                            case ';':
+                            case '#':
+                                break;
+                            default:
                                 {
-                                    throw std::runtime_error("simple config line not find =");
-                                }
-
-                                if (pos != 0 && pos+1 != strLine.length())
-                                {
-                                    std::string strKey(strLine, 0, pos);
-                                    std::string strValue(strLine, pos+1, std::string::npos);
-                                    strKey = Utility::Strip(strKey);
-                                    strValue = Utility::Strip(strValue);
-
-                                    if (!strKey.empty() && !strValue.empty())
+                                    size_t pos = strLine.find_first_of('=');
+                                    if (pos == std::string::npos)
                                     {
-                                        m_keyMap[strKey] = strValue;
-                                        break;
+                                        throw std::runtime_error("simple config line not find =");
                                     }
-                                }
 
-                                throw std::runtime_error("simple config line = position not correct");
-                            }
-                            break;
+                                    if (pos != 0 && pos+1 != strLine.length())
+                                    {
+                                        std::string strKey(strLine, 0, pos);
+                                        std::string strValue(strLine, pos+1, std::string::npos);
+                                        strKey = Utility::Strip(strKey);
+                                        strValue = Utility::Strip(strValue);
+
+                                        if (!strKey.empty() && !strValue.empty())
+                                        {
+                                            m_keyMap[strKey] = strValue;
+                                            break;
+                                        }
+                                    }
+
+                                    throw std::runtime_error("simple config line = position not correct");
+                                }
+                                break;
+                        }
                     }
                 }
             }
-        }
 
-        // full format output
-        void Output(std::ostream &out)
-        {
-            for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
+            // full format output
+            void Output(std::ostream &out)
             {
-                out<<it->first<<"="<<it->second<<std::endl;
-            }
-            out<<std::endl;
-        }
-
-    private:
-        key_map m_keyMap;
-};
-
-
-std::ostream &operator<<(std::ostream &stream, TxtConfigParser &parser)
-{
-    parser.Output(stream);
-    return stream;
-}
-
-std::istream &operator>>(std::istream &stream, TxtConfigParser &parser)
-{
-    parser.Input(stream);
-    return stream;
-}
-
-// ini config file 
-// example:
-// [section]
-// a=b
-// c=d
-class IniConfigParser
-{
-    public:
-        typedef std::map<std::string, TxtConfigParser *>  key_map;
-
-    public:
-        IniConfigParser()
-        {
-        }
-
-        ~IniConfigParser()
-        {
-            Clear();
-        }
-
-        void Clear()
-        {
-            for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
-            {
-                delete it->second;
-            }
-            m_keyMap.clear();
-        }
-
-        void Input(std::istream &in)
-        {
-            // initiation
-            Clear();
-
-            std::string strLine;
-            std::stringstream stream;
-            std::string strKey;
-            bool bStart = false;
-            for (;std::getline(in, strLine);)
-            {
-                strLine = Utility::Strip(strLine);
-                if (!strLine.empty())
+                for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
                 {
-                    char prefix = strLine.at(0);
-                    switch (prefix)
+                    out<<it->first<<"="<<it->second<<std::endl;
+                }
+                out<<std::endl;
+            }
+
+        private:
+            key_map m_keyMap;
+    };
+
+
+    std::ostream &operator<<(std::ostream &stream, TxtConfigParser &parser)
+    {
+        parser.Output(stream);
+        return stream;
+    }
+
+    std::istream &operator>>(std::istream &stream, TxtConfigParser &parser)
+    {
+        parser.Input(stream);
+        return stream;
+    }
+
+    // ini config file 
+    // example:
+    // [section]
+    // a=b
+    // c=d
+    class IniConfigParser
+    {
+        public:
+            typedef std::map<std::string, TxtConfigParser *>  key_map;
+
+        public:
+            IniConfigParser()
+            {
+            }
+
+            ~IniConfigParser()
+            {
+                Clear();
+            }
+
+            void Clear()
+            {
+                for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
+                {
+                    delete it->second;
+                }
+                m_keyMap.clear();
+            }
+
+            void Input(std::istream &in)
+            {
+                // initiation
+                Clear();
+
+                std::string strLine;
+                std::stringstream stream;
+                std::string strKey;
+                bool bStart = false;
+                for (;std::getline(in, strLine);)
+                {
+                    strLine = Utility::Strip(strLine);
+                    if (!strLine.empty())
                     {
-                        case ';':
-                        case '#':
-                            break;
-                        case '[':
-                            if (strLine.at(strLine.length()-1) == ']')
-                            {
+                        char prefix = strLine.at(0);
+                        switch (prefix)
+                        {
+                            case ';':
+                            case '#':
+                                break;
+                            case '[':
+                                if (strLine.at(strLine.length()-1) == ']')
+                                {
+                                    if (bStart)
+                                    {
+                                        // end of a section
+                                        assert(!strKey.empty());
+                                        TxtConfigParser *pImp = new TxtConfigParser;
+                                        stream>>*pImp;
+                                        stream.clear();
+                                        m_keyMap[strKey] = pImp;
+                                    }
+
+                                    // extract section key
+                                    strKey = strLine.substr(1, strLine.length()-2);
+                                    bStart = true;
+                                }
+                                else
+                                {
+                                    throw std::runtime_error("[] not match");
+                                }
+                                break;
+                            default:
                                 if (bStart)
                                 {
-                                    // end of a section
-                                    assert(!strKey.empty());
-                                    TxtConfigParser *pImp = new TxtConfigParser;
-                                    stream>>*pImp;
-                                    stream.clear();
-                                    m_keyMap[strKey] = pImp;
+                                    // input to TxtConfigParser
+                                    stream<<strLine<<std::endl;
                                 }
-
-                                // extract section key
-                                strKey = strLine.substr(1, strLine.length()-2);
-                                bStart = true;
-                            }
-                            else
-                            {
-                                throw std::runtime_error("[] not match");
-                            }
-                            break;
-                        default:
-                            if (bStart)
-                            {
-                                // input to TxtConfigParser
-                                stream<<strLine<<std::endl;
-                            }
-                            break;
+                                break;
+                        }
                     }
+                }
+
+                // last section
+                assert(!strKey.empty());
+                TxtConfigParser *pImp = new TxtConfigParser;
+                stream>>*pImp;
+                m_keyMap[strKey] = pImp;
+            }
+
+            void Output(std::ostream &out)
+            {
+                for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
+                {
+                    out<<"["<<it->first<<"]"<<std::endl;
+                    it->second->Output(out);
                 }
             }
 
-            // last section
-            assert(!strKey.empty());
-            TxtConfigParser *pImp = new TxtConfigParser;
-            stream>>*pImp;
-            m_keyMap[strKey] = pImp;
-        }
-
-        void Output(std::ostream &out)
-        {
-            for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
+            void Set(std::string &strSection, std::string &strKey, std::string &strValue)
             {
-                out<<"["<<it->first<<"]"<<std::endl;
-                it->second->Output(out);
+                if (m_keyMap.count(strSection) > 0)
+                {
+                    m_keyMap[strSection]->Set(strKey, strValue);
+                }
+                else
+                {
+                    TxtConfigParser *pParser = new TxtConfigParser;
+                    pParser->Set(strKey, strValue);
+                    m_keyMap[strSection] = pParser;
+                }
             }
-        }
 
-        void Set(std::string &strSection, std::string &strKey, std::string &strValue)
-        {
-            if (m_keyMap.count(strSection) > 0)
+            std::string Get(std::string &strSection, std::string &strKey)
             {
-                m_keyMap[strSection]->Set(strKey, strValue);
+                if (m_keyMap.count(strSection) > 0)
+                {
+                    return m_keyMap[strSection]->Get(strKey);
+                }
+                else
+                {
+                    return std::string("");
+                }
             }
-            else
-            {
-                TxtConfigParser *pParser = new TxtConfigParser;
-                pParser->Set(strKey, strValue);
-                m_keyMap[strSection] = pParser;
-            }
-        }
 
-        std::string Get(std::string &strSection, std::string &strKey)
-        {
-            if (m_keyMap.count(strSection) > 0)
-            {
-                return m_keyMap[strSection]->Get(strKey);
-            }
-            else
-            {
-                return std::string("");
-            }
-        }
+        private:
+            IniConfigParser(const IniConfigParser &);
+            const IniConfigParser &operator=(const IniConfigParser &);
 
-    private:
-        IniConfigParser(const IniConfigParser &);
-        const IniConfigParser &operator=(const IniConfigParser &);
+        private:
+            key_map m_keyMap;
+    };
 
-    private:
-        key_map m_keyMap;
-};
+    std::ostream &operator<<(std::ostream &stream, IniConfigParser &parser)
+    {
+        parser.Output(stream);
+        return stream;
+    }
 
-std::ostream &operator<<(std::ostream &stream, IniConfigParser &parser)
-{
-    parser.Output(stream);
-    return stream;
-}
-
-std::istream &operator>>(std::istream &stream, IniConfigParser &parser)
-{
-    parser.Input(stream);
-    return stream;
+    std::istream &operator>>(std::istream &stream, IniConfigParser &parser)
+    {
+        parser.Input(stream);
+        return stream;
+    }
 }
 
 #endif

@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <iostream>
-using namespace std;
-
-
 #include "process_wrap.h"
+using namespace std;
+using namespace lib_linux;
 
 void Handler(int signum)
 {

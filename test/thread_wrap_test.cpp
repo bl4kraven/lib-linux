@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-using namespace std;
-
 #include "Mutex.h"
 #include "thread_wrap.h"
+using namespace std;
+using namespace lib_linux;
 
 class MyThread: public Thread
 {

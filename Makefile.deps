@@ -1,0 +1,51 @@
+src/memory_check.o: src/memory_check.cpp src/memory_check.h src/Mutex.h  src/queue.h src/config.h src/stdlog.h
+src/memory_check.cpp:
+src/memory_check.h:
+src/Mutex.h:
+src/queue.h:
+src/config.h:
+src/stdlog.h:
+src/stdnetlog.o: src/stdnetlog.cpp src/stdnetlog.h src/stdlog.h
+src/stdnetlog.cpp:
+src/stdnetlog.h:
+src/stdlog.h:
+src/config.o: src/config.cpp src/config.h src/stdlog.h
+src/config.cpp:
+src/config.h:
+src/stdlog.h:
+src/stdlog.o: src/stdlog.cpp src/stdlog.h
+src/stdlog.cpp:
+src/stdlog.h:
+src/process_wrap.o: src/process_wrap.cpp src/process_wrap.h src/config.h  src/stdlog.h
+src/process_wrap.cpp:
+src/process_wrap.h:
+src/config.h:
+src/stdlog.h:
+src/string_parse.o: src/string_parse.cpp src/string_parse.h
+src/string_parse.cpp:
+src/string_parse.h:
+src/threadpool.o: src/threadpool.cpp src/threadpool.h src/thread_wrap.h  src/semaphore_wrap.h src/config.h src/stdlog.h src/Mutex.h  src/jobqueue.h src/condition.h
+src/threadpool.cpp:
+src/threadpool.h:
+src/thread_wrap.h:
+src/semaphore_wrap.h:
+src/config.h:
+src/stdlog.h:
+src/Mutex.h:
+src/jobqueue.h:
+src/condition.h:
+src/thread_wrap.o: src/thread_wrap.cpp src/thread_wrap.h src/semaphore_wrap.h  src/config.h src/stdlog.h src/utility.h
+src/thread_wrap.cpp:
+src/thread_wrap.h:
+src/semaphore_wrap.h:
+src/config.h:
+src/stdlog.h:
+src/utility.h:
+src/getopt_wrap.o: src/getopt_wrap.cpp src/getopt_wrap.h src/config.h  src/stdlog.h
+src/getopt_wrap.cpp:
+src/getopt_wrap.h:
+src/config.h:
+src/stdlog.h:
+src/base64.o: src/base64.c src/base64.h
+src/base64.c:
+src/base64.h:

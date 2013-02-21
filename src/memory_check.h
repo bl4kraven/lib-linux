@@ -7,7 +7,7 @@
 #include "Mutex.h"
 #include "queue.h"
 
-namespace bobo
+namespace lib_linux
 {
     enum
     {
@@ -43,27 +43,27 @@ namespace bobo
             // tag list
             static TagHeadType s_tagList;
     };
-} // namespace bobo
+}
 
 // global namespace
 inline void *operator new(std::size_t s, const char *file, int nLine)
 {
-    return bobo::MemoryCheck::DebugNew(s, file, nLine);
+    return lib_linux::MemoryCheck::DebugNew(s, file, nLine);
 }
 
 inline void *operator new[](std::size_t s, const char *file, int nLine)
 {
-    return bobo::MemoryCheck::DebugNew(s, file, nLine);
+    return lib_linux::MemoryCheck::DebugNew(s, file, nLine);
 }
 
 inline void operator delete(void *mem)
 {
-    bobo::MemoryCheck::DebugDelete(mem);
+    lib_linux::MemoryCheck::DebugDelete(mem);
 }
 
 inline void operator delete[](void *mem)
 {
-    bobo::MemoryCheck::DebugDelete(mem);
+    lib_linux::MemoryCheck::DebugDelete(mem);
 }
 
 // redefine new

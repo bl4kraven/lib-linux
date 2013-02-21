@@ -1,0 +1,60 @@
+#include <netinet/in.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <assert.h>
+#include <errno.h>
+#include <cstdlib>
+#include <cstring>
+#include "stdnetlog.h"
+
+namespace lib_linux
+{
+    StdLogNetHandler::StdLogNetHandler(const char *pstrIP, unsigned short port)
+    {
+        m_socket = ::socket(AF_INET, SOCK_STREAM, 0);
+        if (m_socket == -1)
+        {
+            throw "StdLogNetHandler create socket fail";
+        }
+
+        sockaddr_in address;
+        address.sin_family = AF_INET;
+        address.sin_addr.s_addr = ::inet_addr(pstrIP);
+        address.sin_port = ::htons(port);
+
+        int ret = ::connect(m_socket, (sockaddr*)&address, sizeof(address));
+        if (ret == -1)
+        {
+            throw "StdLogNetHandler connect fail";
+        }
+    }
+
+    StdLogNetHandler::~StdLogNetHandler()
+    {
+        ::close(m_socket);
+        m_socket = -1;
+    }
+
+    void StdLogNetHandler::Write(const char *pStr, int level)
+    {
+        assert(m_socket != -1);
+
+        int ret = -1;
+        int error = -1;
+        int nLen = ::strlen(pStr);
+
+        do
+        {
+            ret = ::send(m_socket, pStr, nLen, 0);
+            error = errno;
+        }
+        while ((ret == -1) && (errno == EINTR));
+
+        if (error == -1)
+        {
+            throw "StdLogNetHandler send fail";
+        }
+    }
+}

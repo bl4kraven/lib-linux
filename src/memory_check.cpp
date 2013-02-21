@@ -4,7 +4,7 @@
 #include <cstring>
 #include "config.h"
 
-namespace bobo
+namespace lib_linux
 {
     // static variable
     Mutex MemoryCheck::s_mutex;

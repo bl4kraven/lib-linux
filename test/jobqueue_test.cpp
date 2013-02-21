@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-using namespace std;
-
 #include "thread_wrap.h"
 #include "jobqueue.h"
-
+using namespace std;
+using namespace lib_linux;
 
 static JobQueue<int> g_queue;
 

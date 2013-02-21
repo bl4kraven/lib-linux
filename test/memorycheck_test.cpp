@@ -6,7 +6,7 @@
 #include "config.h"
 
 using namespace std;
-using namespace bobo;
+using namespace lib_linux;
 
 int main(int argc, char *argv[])
 {

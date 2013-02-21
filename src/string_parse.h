@@ -4,20 +4,23 @@
 #include <string>
 #include <vector>
 
-class StringParse
+namespace lib_linux
 {
-    public:
-        typedef std::vector<std::string>::const_iterator iterator;
+    class StringParse
+    {
+        public:
+            typedef std::vector<std::string>::const_iterator iterator;
 
-    public:
-        StringParse(const std::string &str);
+        public:
+            StringParse(const std::string &str);
 
-        iterator begin() const;
-        iterator end() const;
+            iterator begin() const;
+            iterator end() const;
 
-    private:
-        std::vector<std::string> m_strings;
-};
+        private:
+            std::vector<std::string> m_strings;
+    };
+}
 
 
 #endif
