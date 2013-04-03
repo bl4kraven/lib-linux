@@ -1,28 +1,31 @@
-CXX=g++
-#CPPFLAGS=-Wall -O2 -DNDEBUG
-CPPFLAGS=-Wall -g -D_DEBUG
-LDFLAGS=
+SRC_DIR=src src/SimpleNet
 
-# source code root dir
-SOURCE_DIR=src/
-FILES=$(shell find $(SOURCE_DIR) -name "*.cpp")
-FILES+= $(shell find $(SOURCE_DIR) -name "*.c")
-HEADERS=$(shell find $(SOURCE_DIR) -name "*.h")
-LIBS=
-DEPEND=
-OBJECTS=$(addsuffix .o, $(basename $(FILES)))
+CFLAGS+=-Wall -g -D_DEBUG
+#CFLAGS+=-Wall -O2
+CPPFLAGS+=-Wall -g -D_DEBUG
+#CPPFLAGS+=-Wall -O2
+CPPFLAGS+=-Isrc
+
+CFILES=$(shell find $(SRC_DIR)  -maxdepth 1 -name "*.c")
+CPPFILES=$(shell find $(SRC_DIR)  -maxdepth 1 -name "*.cpp")
+
+COBJS=$(CFILES:%.c=%.o) 
+CPPOBJS=$(CPPFILES:%.cpp=%.o)
 TARGET=liblinux_tool.a
+LIBS+=
 
 all:$(TARGET) 
 
-# include all source file depends.
--include Makefile.deps
+-include $(addsuffix /*.d, $(SRC_DIR))
 
-$(TARGET): Makefile.deps $(OBJECTS) $(DEPEND)
-	ar cru $(TARGET) $(OBJECTS)
+$(TARGET):$(COBJS) $(CPPOBJS)
+	ar cru $(TARGET) $^
 
-Makefile.deps: $(FILES) $(HEADERS)
-	makedepend -f "$(FILES)" -c "$(CXX)" -p "$(CPPFLAGS)" > Makefile.deps
+$(COBJS):%.o:%.c
+	gcc -c $(CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
+
+$(CPPOBJS):%.o:%.cpp
+	g++ -c $(CPPFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
 
 clean:
-	-rm -f $(OBJECTS) $(TARGET) Makefile.deps
+	-rm -f $(addsuffix /*.d, $(SRC_DIR)) $(addsuffix /*.o, $(SRC_DIR)) $(TARGET)

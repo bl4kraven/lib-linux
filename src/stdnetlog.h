@@ -10,8 +10,7 @@ namespace lib_linux
             StdLogNetHandler(const char *pstrIP, unsigned short port);
             ~StdLogNetHandler();
 
-            void Write(const char *pStr, int level);
-
+            void Write(int level, const char *format, va_list arg);
         private:
             int m_socket;
     };

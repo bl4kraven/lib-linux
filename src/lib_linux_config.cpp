@@ -1,4 +1,4 @@
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {

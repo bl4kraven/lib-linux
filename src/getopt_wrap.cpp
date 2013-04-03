@@ -3,15 +3,15 @@
 #include <assert.h>
 #include <string.h>
 #include "getopt_wrap.h"
-#include "config.h"
+#include "lib_linux_config.h"
+
+// option argument
+extern char *optarg;
+// first nonoption argument
+extern int optind;
 
 namespace lib_linux
 {
-    // option argument
-    extern char *optarg;
-    // first nonoption argument
-    extern int optind;
-
     GetOpt::GetOpt(int argc, char **argv)
         :m_argc(argc), m_argv(argv)
     {
@@ -87,14 +87,15 @@ namespace lib_linux
                 Opt opt = m_mapOpts[next_option];
                 if (opt.has_arg)
                 {
-                    opt.arg = optarg;
+                    opt.arg = ::optarg;
                 }
+
                 m_opts.push_back(opt);
             }
         }while(next_option != -1);
 
         // nonoption argument
-        for (int i=optind; i<m_argc; i++)
+        for (int i=::optind; i<m_argc; i++)
         {
             m_argument.push_back(m_argv[i]);
         }

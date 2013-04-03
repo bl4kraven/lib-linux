@@ -9,7 +9,7 @@
 #include <sys/wait.h>
 
 #include "process_wrap.h"
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {
@@ -73,7 +73,7 @@ namespace lib_linux
             int index=0;
             for (std::vector<std::string>::iterator it=vec_str.begin(); it!=vec_str.end(); it++)
             {
-                TRACE("%s\n", (*it).c_str());
+                DEBUG("%s\n", (*it).c_str());
                 arg.get()[index++] = (*it).c_str();
             }
 

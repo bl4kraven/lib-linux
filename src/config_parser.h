@@ -24,7 +24,7 @@ namespace lib_linux
             {
             }
 
-            std::string Get(std::string &strKey)
+            std::string Get(std::string strKey)
             {
                 if (m_keyMap.count(strKey) > 0)
                 {
@@ -36,7 +36,7 @@ namespace lib_linux
                 }
             }
 
-            void Set(std::string &strKey, std::string &strValue)
+            void Set(std::string strKey, std::string strValue)
             {
                 m_keyMap[strKey] = strValue;
             }
@@ -66,16 +66,22 @@ namespace lib_linux
                                         throw std::runtime_error("simple config line not find =");
                                     }
 
-                                    if (pos != 0 && pos+1 != strLine.length())
+                                    if (pos != 0)
                                     {
                                         std::string strKey(strLine, 0, pos);
-                                        std::string strValue(strLine, pos+1, std::string::npos);
                                         strKey = Utility::Strip(strKey);
-                                        strValue = Utility::Strip(strValue);
 
-                                        if (!strKey.empty() && !strValue.empty())
+                                        if (!strKey.empty())
                                         {
-                                            m_keyMap[strKey] = strValue;
+                                            if (pos+1 < strLine.length())
+                                            {
+                                                std::string strValue(strLine, pos+1, std::string::npos);
+                                                m_keyMap[strKey] = Utility::Strip(strValue); 
+                                            }
+                                            else
+                                            {
+                                                m_keyMap[strKey] = "";
+                                            }
                                             break;
                                         }
                                     }
@@ -91,11 +97,12 @@ namespace lib_linux
             // full format output
             void Output(std::ostream &out)
             {
+                //can't call <<endl, because it can flush buffer to file.
                 for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
                 {
-                    out<<it->first<<"="<<it->second<<std::endl;
+                    out<<it->first<<"="<<it->second<<"\n";
                 }
-                out<<std::endl;
+                out<<"\n";
             }
 
         private:
@@ -103,17 +110,8 @@ namespace lib_linux
     };
 
 
-    std::ostream &operator<<(std::ostream &stream, TxtConfigParser &parser)
-    {
-        parser.Output(stream);
-        return stream;
-    }
-
-    std::istream &operator>>(std::istream &stream, TxtConfigParser &parser)
-    {
-        parser.Input(stream);
-        return stream;
-    }
+    std::ostream &operator<<(std::ostream &stream, TxtConfigParser &parser);
+    std::istream &operator>>(std::istream &stream, TxtConfigParser &parser);
 
     // ini config file 
     // example:
@@ -208,12 +206,13 @@ namespace lib_linux
             {
                 for (key_map::const_iterator it=m_keyMap.begin(); it!=m_keyMap.end(); it++)
                 {
-                    out<<"["<<it->first<<"]"<<std::endl;
+                    //can't call <<endl, because it can flush buffer to file.
+                    out<<"["<<it->first<<"]"<<"\n";
                     it->second->Output(out);
                 }
             }
 
-            void Set(std::string &strSection, std::string &strKey, std::string &strValue)
+            void Set(std::string strSection, std::string strKey, std::string strValue)
             {
                 if (m_keyMap.count(strSection) > 0)
                 {
@@ -227,7 +226,7 @@ namespace lib_linux
                 }
             }
 
-            std::string Get(std::string &strSection, std::string &strKey)
+            std::string Get(std::string strSection, std::string strKey)
             {
                 if (m_keyMap.count(strSection) > 0)
                 {
@@ -247,17 +246,8 @@ namespace lib_linux
             key_map m_keyMap;
     };
 
-    std::ostream &operator<<(std::ostream &stream, IniConfigParser &parser)
-    {
-        parser.Output(stream);
-        return stream;
-    }
-
-    std::istream &operator>>(std::istream &stream, IniConfigParser &parser)
-    {
-        parser.Input(stream);
-        return stream;
-    }
+    std::ostream &operator<<(std::ostream &stream, IniConfigParser &parser);
+    std::istream &operator>>(std::istream &stream, IniConfigParser &parser);
 }
 
 #endif

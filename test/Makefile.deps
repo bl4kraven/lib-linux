@@ -1,9 +1,0 @@
-threadpool_test.o: threadpool_test.cpp ../src/threadpool.h  ../src/thread_wrap.h ../src/semaphore_wrap.h ../src/config.h  ../src/Mutex.h ../src/jobqueue.h ../src/condition.h
-threadpool_test.cpp:
-../src/threadpool.h:
-../src/thread_wrap.h:
-../src/semaphore_wrap.h:
-../src/config.h:
-../src/Mutex.h:
-../src/jobqueue.h:
-../src/condition.h:

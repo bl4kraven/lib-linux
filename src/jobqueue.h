@@ -4,7 +4,7 @@
 #include <deque>
 #include "condition.h"
 #include "Mutex.h"
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {
@@ -27,7 +27,7 @@ namespace lib_linux
                     return m_queue.size();
                 }
 
-                void Push(T elem)
+                void Push(T &elem)
                 {
                     {
                         // only enqueue in WaitPop called. 

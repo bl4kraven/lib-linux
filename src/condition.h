@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include "Mutex.h"
 #include <sys/time.h>
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {

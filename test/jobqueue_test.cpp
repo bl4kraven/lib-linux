@@ -21,8 +21,9 @@ class PushThread: public Thread
             cout<<"PushThread"<<endl;
             while (true)
             {
+                int i = 1;
                 sleep(1);
-                g_queue.Push(1);
+                g_queue.Push(i);
             }
         }
 };
@@ -42,12 +43,12 @@ class PopThread: public Thread
             while (true)
             {
                 int nValue;
-                TRACE("enter jobqueue waitpop");
+                DEBUG("enter jobqueue waitpop");
                 if (g_queue.WaitPop(500, nValue))
                 {
                     cout<<nValue<<" size:"<<g_queue.Size()<<endl;
                 }
-                TRACE("exit jobqueue waitpop");
+                DEBUG("exit jobqueue waitpop");
             }
         }
 };

@@ -1,6 +1,6 @@
 #include "thread_wrap.h"
 #include "utility.h"
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {
@@ -12,58 +12,73 @@ namespace lib_linux
     }
 
     Thread::Thread(bool bAutoStart)
-        :m_bRelease(false)
+        :m_threadID(-1), 
+        m_bStart(false)
     {
         ::pthread_attr_init(&m_attr);
-        // set detached thread
-        ::pthread_attr_setdetachstate(&m_attr, PTHREAD_CREATE_DETACHED);
-        if (::pthread_create(&m_threadID, &m_attr, &ThreadFuntion, this) != 0)
-        {
-            TRACE("pthread_create create fail");
-        }
 
         if (bAutoStart)
         {
-            m_sem.Post();
-            m_bRelease = true;
+            Start();
         }
     }
 
     Thread::~Thread()
     {
+        DEBUG("call thread wait");
+        Wait();
+        DEBUG("call thread wait ok");
         ::pthread_attr_destroy(&m_attr);
     }
 
     void *Thread::ThreadFuntion(void *his)
     {
+        // TODO change to sync cancel mode
+        ::pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+
         // Sleep here to avid crash. 
         // because dervied thread class not constructor to setup vtable,
         // and call pure virtual function.
         Utility::Sleep(5);
 
+        DEBUG("ready call thread run");
         Thread *h=(Thread *)his;
-        h->m_sem.Wait();
+        //h->m_sem.Wait();
         h->Run();
         h->m_semWait.Post();
+        DEBUG("call thread run ok");
         return NULL;
     }
 
     void Thread::Start()
     {
-        if (!m_bRelease)
+        if (!m_bStart)
         {
-            m_sem.Post();
-            m_bRelease = true;
+            // set detached thread
+            ::pthread_attr_setdetachstate(&m_attr, PTHREAD_CREATE_DETACHED);
+            if (::pthread_create(&m_threadID, &m_attr, &ThreadFuntion, this) != 0)
+            {
+                ERROR("pthread_create create fail");
+                ::abort();
+            }
+
+            //m_sem.Post();
+            m_bStart = true;
         }
         else
         {
-            assert("Thread: Duplication call Start");
+            WARNING("Thread: Duplication call Start");
         }
     }
 
     void Thread::Wait()
     {
-        m_semWait.Wait();
+        if (m_bStart)
+        {
+            // pthread_join only used to undetached thread
+            //::pthread_join(m_threadID, NULL);
+            m_semWait.Wait();
+        }
     }
 
     pthread_t Thread::GetThreadID()

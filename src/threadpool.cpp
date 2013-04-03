@@ -1,5 +1,5 @@
 #include "threadpool.h"
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {
@@ -23,7 +23,7 @@ namespace lib_linux
         }
         catch (...)
         {
-            TRACE("exception caugth in threadpool");
+            ERROR("exception caugth in threadpool");
             ::abort();
         }
     }

@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include "semaphore_wrap.h"
 
+
 namespace lib_linux
 {
     class Thread
@@ -41,12 +42,12 @@ namespace lib_linux
             // so don't join, but no way to synchronize on its completion and obtain its return value.
             pthread_attr_t m_attr;
 
-            Semaphore m_sem;
+            //Semaphore m_sem;
             // wait for thread to exit
             Semaphore m_semWait;
 
             // is semphore increase to release
-            bool m_bRelease;
+            bool m_bStart;
     };
 }
 

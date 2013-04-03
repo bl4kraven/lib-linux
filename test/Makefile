@@ -1,27 +1,22 @@
-CXX=g++
-#CPPFLAGS=-Wall -O2 -DNDEBUG -I../src/
-CPPFLAGS=-Wall -g -D_DEBUG -I../src/
-LDFLAGS=-L../
+SRC_DIR=.
 
-# source code root dir
-SOURCE_DIR=../src/
-FILES=
-HEADERS=
-LIBS=-llinux_tool -lpthread
-DEPEND=../liblinux_tool.a
-OBJECTS=$(TARGET).o $(FILES:.cpp=.o) 
-TARGET=stdlog_test
+CPPFLAGS+=-Wall -g -D_DEBUG
+CPPFLAGS+=-I../src -I../src/SimpleNet
+CPPFILES=$(shell find $(SRC_DIR)  -maxdepth 1 -name "*.cpp")
+CPPOBJS=$(CPPFILES:%.cpp=%.o)
+LIBS+=../liblinux_tool.a -lpthread
+TARGET=$(CPPFILES:%.cpp=%)
 
 all:$(TARGET) 
 
-# include all source file depends.
--include Makefile.deps
+-include $(addsuffix /*.d, $(SRC_DIR))
 
-$(TARGET): Makefile.deps $(OBJECTS) $(DEPEND)
-	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS)
+$(TARGET):%:%.o
+	g++ -o $@ $< $(LIBS)
 
-Makefile.deps: $(FILES) $(HEADERS)
-	makedepend -f "$(FILES) $(TARGET).cpp" -c "$(CXX)" -p "$(CPPFLAGS)" > Makefile.deps
+$(CPPOBJS):%.o:%.cpp
+	g++ -c $(CPPFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
 
 clean:
-	-rm -f $(OBJECTS) $(TARGET) Makefile.deps
+	-rm -f $(addsuffix /*.d, $(SRC_DIR)) $(addsuffix /*.o, $(SRC_DIR)) $(TARGET)
+

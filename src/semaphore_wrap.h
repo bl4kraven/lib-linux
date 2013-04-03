@@ -1,7 +1,7 @@
 #ifndef __SEMAPHORE_WRAP_H__
 #define __SEMAPHORE_WRAP_H__
 #include <semaphore.h>
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {
@@ -38,7 +38,7 @@ namespace lib_linux
                 {
                     if (errno != EAGAIN)
                     {
-                        TRACE("Semaphore sem_trywait error!");
+                        ERROR("Semaphore sem_trywait error!");
                     }
 
                     return false;

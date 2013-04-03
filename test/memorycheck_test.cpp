@@ -3,7 +3,7 @@
 #include <cstdlib>
 
 #include "memory_check.h"
-#include "config.h"
+#include "lib_linux_config.h"
 
 using namespace std;
 using namespace lib_linux;
@@ -15,20 +15,20 @@ int main(int argc, char *argv[])
     const char* s40 = "this is 40 characters long, okey dokeys";
     const char *filename = "test/memorycheck_test.cpp";
     
-    TRACE("char* victim = new char[20]");
+    DEBUG("char* victim = new char[20]");
     char* victim = new char[20];
     strcpy(victim, s20);
     MemoryCheck::ValidateMemoryAll();
 
     TagElem *victimInfo = (TagElem *)(victim - sizeof(int) - sizeof(TagElem));
-    TRACE("%s", victimInfo->fileName);
+    DEBUG("%s", victimInfo->fileName);
     if (strcmp(victimInfo->fileName, filename) != 0)
     {
         assert(false && "victimInfo->fileName != filename");
         abort();
     }
 
-    TRACE("%d", victimInfo->size);
+    DEBUG("%d", victimInfo->size);
     if (victimInfo->size != 20)
     {
         assert(false && "victimInfo->size != 20");
@@ -36,25 +36,25 @@ int main(int argc, char *argv[])
     }
         
 
-    TRACE("char* victim2 = new char[30]");
+    DEBUG("char* victim2 = new char[30]");
     char* victim2 = new char[30];
     strcpy(victim2, s30);
     MemoryCheck::ValidateMemoryAll();
 
-    TRACE("char* victim3 = new char[20]");
+    DEBUG("char* victim3 = new char[20]");
     char* victim3 = new char[20];
     strcpy(victim3, s20);
     MemoryCheck::ValidateMemoryAll();
-    TRACE("char* victim4 = new char[40]");
+    DEBUG("char* victim4 = new char[40]");
     char* victim4 = new char[40];
     strcpy(victim4, s40);
     MemoryCheck::ValidateMemoryAll();
-    TRACE("char* victim5 = new char[30]");
+    DEBUG("char* victim5 = new char[30]");
     char* victim5 = new char[30];
     strcpy(victim5, s30);
     MemoryCheck::ValidateMemoryAll();
     
-    TRACE("delete all");
+    DEBUG("delete all");
     delete victim3;
     MemoryCheck::ValidateMemoryAll();
     delete victim4;

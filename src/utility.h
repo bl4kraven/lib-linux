@@ -1,7 +1,9 @@
 #ifndef __UTILITY_H__
 #define __UTILITY_H__
+#include <sys/sysinfo.h>
+#include <limits.h>
 #include <string>
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {
@@ -17,6 +19,17 @@ namespace lib_linux
                 tv.tv_sec = ms / 1000;
                 tv.tv_usec = (ms % 1000) * 1000;
                 ::select(0, NULL, NULL, NULL, &tv);
+            }
+
+            static unsigned long GetUptime()
+            {
+                struct sysinfo s_info;
+                if(::sysinfo(&s_info) != 0)
+                {
+                    ERROR("call sysinfo get uptime fail");
+                    return 0;
+                }
+                return s_info.uptime;
             }
 
             static std::string Strip(const std::string &str)
@@ -35,6 +48,25 @@ namespace lib_linux
                     return std::string(str, pos_first, pos_last-pos_first+1);
                 }
             }
+
+            static bool StrToInt(const std::string &str, long &nRet)
+            {
+                char *endptr = NULL;
+                long val = ::strtol(str.c_str(), &endptr, 10);
+
+                /* Check for various possible errors */
+                if ((errno == ERANGE && (val == LONG_MAX || val == LONG_MIN)) ||
+                        (errno != 0) || 
+                        (endptr == str.c_str())
+                   ) 
+                {
+                    return false;
+                }
+
+                nRet = val;
+                return true;
+            }
     };
 }
+
 #endif

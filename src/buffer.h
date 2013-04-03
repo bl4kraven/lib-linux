@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {
@@ -19,7 +20,7 @@ namespace lib_linux
             /// the default initial buffer max size.
             enum
             {
-                SIZE = 300
+                SIZE = 256
             };
 
         public:
@@ -66,11 +67,22 @@ namespace lib_linux
             ///
             int realloc( int add_len )
             {
-                //	int new_size = add_len >= SIZE ? add_len : SIZE;
-                _buf = (char*) ::realloc( _buf, add_len + _max_size );
-                //	_max_size += new_size;  //??? may be _max_size = new_size;
-                _max_size += add_len;
-
+                assert(add_len > 0);
+                int new_size = 0;
+                if (add_len % SIZE == 0)
+                {
+                    new_size = add_len;
+                }
+                else
+                {
+                    new_size = add_len > SIZE ? (add_len/SIZE + 1)*SIZE : SIZE;
+                }
+                    
+                //_buf = (char*) ::realloc( _buf, add_len + _max_size );
+                _buf = (char*) ::realloc( _buf, new_size + _max_size );
+                _max_size += new_size;
+                //_max_size += add_len;
+                DEBUG("Buffer realloc add_len:%d new_size:%d afterall:%d", add_len, new_size, _max_size);
                 return _max_size;
             }
 

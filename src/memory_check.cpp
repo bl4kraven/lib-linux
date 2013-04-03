@@ -2,7 +2,7 @@
 #include "memory_check.h"
 #include <cstdlib>
 #include <cstring>
-#include "config.h"
+#include "lib_linux_config.h"
 
 namespace lib_linux
 {

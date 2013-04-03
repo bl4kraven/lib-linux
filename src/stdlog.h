@@ -4,19 +4,28 @@
 
 namespace lib_linux
 {
+    enum
+    {
+        LOG_LEVEL_ERROR = 0,
+        LOG_LEVEL_WARNING,
+        LOG_LEVEL_INFO,
+        LOG_LEVEL_DEBUG
+    };
+
     class StdLogHandler
     {
         public:
             StdLogHandler();
             virtual ~StdLogHandler();
-            virtual void Write(const char *pStr, int level)=0;
+            virtual void Write(int level, const char *format, va_list arg) = 0;
+            void WriteString(int level, const char *format, ...);
     };
 
     class StdLogOutHandler:public StdLogHandler
     {
         public:
             // output to console
-            void Write(const char *pStr, int level);
+            void Write(int level, const char *format, va_list arg);
     };
 
     class ColorDecoratorHandler:public StdLogHandler
@@ -24,7 +33,7 @@ namespace lib_linux
         public:
             ColorDecoratorHandler(StdLogHandler *pHandler);
             // color output to console
-            void Write(const char *pStr, int level);
+            void Write(int level, const char *format, va_list arg);
         private:
             StdLogHandler *m_pHandler;
     };
@@ -32,27 +41,19 @@ namespace lib_linux
     class StdLog
     {
         public:
-            enum
-            {
-                LOG_LEVEL_ERROR = 0,
-                LOG_LEVEL_WARNING,
-                LOG_LEVEL_INFO,
-                LOG_LEVEL_DEBUG
-            };
-
-        public:
             StdLog(StdLogHandler *pHandler=NULL);
 
             void SetHandler(StdLogHandler *pHandler);
             void SetLevel(int level);
 
+            void Debug_HEX(const char *pData, int nLen);
             void Debug(const char *format, ...);
             void Info(const char *format, ...);
             void Warning(const char *format, ...);
             void Error(const char *format, ...);
 
         protected:
-            void Write(const char *format, va_list arg, int level);
+            void Write(int level, const char *format, va_list arg);
 
         private:
             StdLogHandler *m_pHandler;

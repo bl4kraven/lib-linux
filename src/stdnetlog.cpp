@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <errno.h>
+#include <stdio.h>
 #include <cstdlib>
 #include <cstring>
 #include "stdnetlog.h"
@@ -21,8 +22,8 @@ namespace lib_linux
 
         sockaddr_in address;
         address.sin_family = AF_INET;
-        address.sin_addr.s_addr = ::inet_addr(pstrIP);
-        address.sin_port = ::htons(port);
+        address.sin_addr.s_addr = inet_addr(pstrIP);
+        address.sin_port = htons(port);
 
         int ret = ::connect(m_socket, (sockaddr*)&address, sizeof(address));
         if (ret == -1)
@@ -37,24 +38,28 @@ namespace lib_linux
         m_socket = -1;
     }
 
-    void StdLogNetHandler::Write(const char *pStr, int level)
+    void StdLogNetHandler::Write(int level, const char *format, va_list arg)
     {
         assert(m_socket != -1);
-
-        int ret = -1;
-        int error = -1;
-        int nLen = ::strlen(pStr);
-
-        do
+        char buffer[10*1024];
+        int nLen = vsnprintf(buffer, sizeof(buffer), format, arg);
+        if (nLen > 0)
         {
-            ret = ::send(m_socket, pStr, nLen, 0);
-            error = errno;
-        }
-        while ((ret == -1) && (errno == EINTR));
+            buffer[nLen] = '\0';
 
-        if (error == -1)
-        {
-            throw "StdLogNetHandler send fail";
+            int ret = -1;
+            int error = -1;
+            do
+            {
+                ret = ::send(m_socket, buffer, nLen, 0);
+                error = errno;
+            }
+            while ((ret == -1) && (errno == EINTR));
+
+            if (error == -1)
+            {
+                throw "StdLogNetHandler send fail";
+            }
         }
     }
 }
