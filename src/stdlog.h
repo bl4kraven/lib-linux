@@ -31,7 +31,8 @@ namespace lib_linux
     class ColorDecoratorHandler:public StdLogHandler
     {
         public:
-            ColorDecoratorHandler(StdLogHandler *pHandler);
+            ColorDecoratorHandler(StdLogHandler *pHandler=NULL);
+            void SetHandler(StdLogHandler *pHandler);
             // color output to console
             void Write(int level, const char *format, va_list arg);
         private:
@@ -44,7 +45,9 @@ namespace lib_linux
             StdLog(StdLogHandler *pHandler=NULL);
 
             void SetHandler(StdLogHandler *pHandler);
+            StdLogHandler *GetHandler();
             void SetLevel(int level);
+            void SetTime(bool bTime);
 
             void Debug_HEX(const char *pData, int nLen);
             void Debug(const char *format, ...);
@@ -60,6 +63,9 @@ namespace lib_linux
 
             // print level less or equal than this
             int m_level;
+
+            // output time
+            bool m_bTime;
     };
 }
 

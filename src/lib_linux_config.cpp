@@ -1,12 +1,51 @@
 #include "lib_linux_config.h"
+#include "syslog_log.h"
+#include "singleton.h"
 
 namespace lib_linux
 {
-    StdLog &GetLogger(void)
+    static StdLog &GetLogger(int flag)
     {
-        static StdLogOutHandler handler;
-        static ColorDecoratorHandler colorHandler(&handler);
-        static StdLog log(&colorHandler);
-        return log;
+        if (flag & FLAG_CON)
+        {
+            // stdout console
+            Singleton<StdLog>::Instance()->SetHandler(Singleton<StdLogOutHandler>::Instance());
+        }
+        else
+        {
+            // syslog
+            Singleton<StdLog>::Instance()->SetHandler(Singleton<SyslogHandler>::Instance());
+        }
+
+        if (flag & FLAG_COLOR)
+        {
+            Singleton<ColorDecoratorHandler>::Instance()->SetHandler(Singleton<StdLog>::Instance()->GetHandler());
+            Singleton<StdLog>::Instance()->SetHandler(Singleton<ColorDecoratorHandler>::Instance());
+        }
+
+        if (flag & FLAG_TIME)
+        {
+            Singleton<StdLog>::Instance()->SetTime(true);
+        }
+        else
+        {
+            Singleton<StdLog>::Instance()->SetTime(false);
+        }
+
+        return *Singleton<StdLog>::Instance();
+    }
+
+    // default
+    static int g_flag = FLAG_CON | FLAG_TIME | FLAG_COLOR;
+    void SetLogger(int flag, int level)
+    {
+        assert((g_flag & FLAG_CON) || (g_flag & FLAG_SYSLOG));
+        g_flag = flag;
+        GetLogger(g_flag).SetLevel(level);
+    }
+
+    StdLog &GetCurLogger()
+    {
+        return GetLogger(g_flag);
     }
 }

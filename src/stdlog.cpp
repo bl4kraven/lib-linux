@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <cstdio>
 #include <ctime>
+#include <sys/time.h>
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
@@ -51,6 +52,11 @@ namespace lib_linux
     {
     }
 
+    void ColorDecoratorHandler::SetHandler(StdLogHandler *pHandler)
+    {
+        m_pHandler = pHandler;
+    }
+
     void ColorDecoratorHandler::Write(int level, const char *format, va_list arg)
     {
         assert(m_pHandler);
@@ -86,7 +92,8 @@ namespace lib_linux
     // StdLog
     StdLog::StdLog(StdLogHandler *pHandler)
         :m_pHandler(pHandler),
-        m_level(LOG_LEVEL_DEBUG)
+        m_level(LOG_LEVEL_DEBUG),
+        m_bTime(false)
     {
     }
 
@@ -95,10 +102,20 @@ namespace lib_linux
         m_pHandler = pHandler;
     }
 
+    StdLogHandler *StdLog::GetHandler()
+    {
+        return m_pHandler;
+    }
+
     void StdLog::SetLevel(int level)
     {
         assert(level >= LOG_LEVEL_ERROR && level <= LOG_LEVEL_DEBUG);
         m_level = level;
+    }
+
+    void StdLog::SetTime(bool bTime)
+    {
+        m_bTime = bTime;
     }
 
     void StdLog::Debug(const char * format, ...)
@@ -121,7 +138,7 @@ namespace lib_linux
             stream_hex<<std::setfill('0')<<std::setw(2)<<(int)(unsigned char)(pData[iter])<<" ";
         }
 
-        Debug("%s", stream_hex.str().c_str());
+        Debug("%s\n", stream_hex.str().c_str());
     }
 
     void StdLog::Info(const char * format, ...)
@@ -155,22 +172,29 @@ namespace lib_linux
         {
             assert(m_pHandler != NULL);
             assert(level >= LOG_LEVEL_ERROR && level <= LOG_LEVEL_DEBUG);
-            const char *str_level[] = {"ERROR", "WARNING", "INFO", "DEBUG"};
+            const char *str_level[] = {"ERROR", "WARN", "INFO", "DEBUG"};
 
-            // convert time
-            time_t rawtime;
-            struct tm *timeinfo;
-            ::time(&rawtime);
-            timeinfo = ::localtime(&rawtime);
-            m_pHandler->WriteString(level, "[%-7s] [%d-%d-%d %d:%d:%d] [%s] ",
-                                           str_level[level],
-                                           timeinfo->tm_year, 
-                                           timeinfo->tm_mon,
-                                           timeinfo->tm_mday,
-                                           timeinfo->tm_hour,
-                                           timeinfo->tm_min,
-                                           timeinfo->tm_sec,
-                                           (error == 0)?"OK":strerror(error));
+            if (m_bTime)
+            {
+                // convert time
+                struct timeval millsecond;
+                struct tm *timeinfo;
+                ::gettimeofday(&millsecond, 0);
+                timeinfo = ::localtime(&millsecond.tv_sec);
+                m_pHandler->WriteString(level, "[%-5s] [%02d:%02d:%02d:%03d] [%s] ",
+                                                str_level[level],
+                                                timeinfo->tm_hour,
+                                                timeinfo->tm_min,
+                                                timeinfo->tm_sec,
+                                                millsecond.tv_usec/1000,
+                                                (error == 0)?"OK":strerror(error));
+            }
+            else
+            {
+                m_pHandler->WriteString(level, "[%-5s] [%s] ",
+                                                str_level[level],
+                                                (error == 0)?"OK":strerror(error));
+            }
             m_pHandler->Write(level, format, arg);
         }
     }

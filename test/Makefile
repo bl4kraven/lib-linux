@@ -11,7 +11,7 @@ all:$(TARGET)
 
 -include $(addsuffix /*.d, $(SRC_DIR))
 
-$(TARGET):%:%.o
+$(TARGET):%:%.o ../liblinux_tool.a
 	g++ -o $@ $< $(LIBS)
 
 $(CPPOBJS):%.o:%.cpp

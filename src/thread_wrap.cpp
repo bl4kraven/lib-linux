@@ -13,7 +13,7 @@ namespace lib_linux
 
     Thread::Thread(bool bAutoStart)
         :m_threadID(-1), 
-        m_bStart(false)
+        m_bRunning(false)
     {
         ::pthread_attr_init(&m_attr);
 
@@ -25,9 +25,9 @@ namespace lib_linux
 
     Thread::~Thread()
     {
-        DEBUG("call thread wait");
+        //DEBUG("call thread wait");
         Wait();
-        DEBUG("call thread wait ok");
+        //DEBUG("call thread wait ok");
         ::pthread_attr_destroy(&m_attr);
     }
 
@@ -41,18 +41,18 @@ namespace lib_linux
         // and call pure virtual function.
         Utility::Sleep(5);
 
-        DEBUG("ready call thread run");
+        //DEBUG("ready call thread run");
         Thread *h=(Thread *)his;
         //h->m_sem.Wait();
         h->Run();
         h->m_semWait.Post();
-        DEBUG("call thread run ok");
+        //DEBUG("call thread run ok");
         return NULL;
     }
 
     void Thread::Start()
     {
-        if (!m_bStart)
+        if (!m_bRunning)
         {
             // set detached thread
             ::pthread_attr_setdetachstate(&m_attr, PTHREAD_CREATE_DETACHED);
@@ -63,7 +63,7 @@ namespace lib_linux
             }
 
             //m_sem.Post();
-            m_bStart = true;
+            m_bRunning = true;
         }
         else
         {
@@ -73,11 +73,13 @@ namespace lib_linux
 
     void Thread::Wait()
     {
-        if (m_bStart)
+        if (m_bRunning)
         {
             // pthread_join only used to undetached thread
             //::pthread_join(m_threadID, NULL);
             m_semWait.Wait();
+            m_bRunning = false;
+            m_threadID = -1;
         }
     }
 

@@ -19,13 +19,13 @@ all:$(TARGET)
 -include $(addsuffix /*.d, $(SRC_DIR))
 
 $(TARGET):$(COBJS) $(CPPOBJS)
-	ar cru $(TARGET) $^
+	$(HOST)ar cru $(TARGET) $^
 
 $(COBJS):%.o:%.c
-	gcc -c $(CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
+	$(HOST)gcc -c $(CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
 
 $(CPPOBJS):%.o:%.cpp
-	g++ -c $(CPPFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
+	$(HOST)g++ -c $(CPPFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
 
 clean:
 	-rm -f $(addsuffix /*.d, $(SRC_DIR)) $(addsuffix /*.o, $(SRC_DIR)) $(TARGET)

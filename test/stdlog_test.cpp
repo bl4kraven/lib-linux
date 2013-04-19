@@ -9,7 +9,9 @@ int main(int argc, char **argv)
 {
     try
     {
-        StdLogNetHandler handler("127.0.0.1", 8080);
+        //StdLogNetHandler handler("127.0.0.1", 8080);
+
+        StdLogOutHandler handler;
         ColorDecoratorHandler colorHandler(&handler);
         StdLog log(&colorHandler);
 
@@ -19,11 +21,11 @@ int main(int argc, char **argv)
         log.Warning("%s %d\n", "warning", 3);
         log.Error("%s %d\n", "error", 4);
 
-        SET_LOG_LEVEL(ERROR);
-        DEBUG("%s %d\n", "debug", 1);
-        INFO("%s %d\n", "info", 2);
-        WARNING("%s %d\n", "warning", 3);
-        ERROR("%s %d\n", "error", 4);
+        SET_LOG(FLAG_SYSLOG | FLAG_TIME, ERROR);
+        DEBUG("%s %d", "debug", 1);
+        INFO("%s %d", "info", 2);
+        WARNING("%s %d", "warning", 3);
+        ERROR("%s %d", "error", 4);
     }
     catch (const char *pStr)
     {

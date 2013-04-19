@@ -46,8 +46,8 @@ namespace lib_linux
             // wait for thread to exit
             Semaphore m_semWait;
 
-            // is semphore increase to release
-            bool m_bStart;
+            // is thread running
+            bool m_bRunning;
     };
 }
 

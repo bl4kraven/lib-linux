@@ -11,14 +11,24 @@
 
 namespace lib_linux
 {
-    // get system logger
-    StdLog &GetLogger(void);
+    enum{
+        FLAG_TIME = 0x01,
+        FLAG_COLOR = 0x02,
+        FLAG_SYSLOG = 0x04,
+        FLAG_NET = 0x08,
+        FLAG_CON = 0x10,
+    };
+
+    void SetLogger(int flag, int level);
+    StdLog &GetCurLogger();
 }
 
-#define SET_LOG_LEVEL(level)       lib_linux::GetLogger().SetLevel(lib_linux::LOG_LEVEL_##level)
-#define DEBUG(format, args...)     lib_linux::GetLogger().Debug(format"\n", ##args)
-#define INFO(format, args...)      lib_linux::GetLogger().Info(format"\n", ##args)
-#define WARNING(format, args...)   lib_linux::GetLogger().Warning(format"\n", ##args)
-#define ERROR(format, args...)     lib_linux::GetLogger().Error(format"\n", ##args)
+#define SET_LOG(flag, level)        lib_linux::SetLogger(flag, lib_linux::LOG_LEVEL_##level)
+
+#define DEBUG(format, args...)     lib_linux::GetCurLogger().Debug(format"\n", ##args)
+#define DEBUG_HEX(pData, nLen)     lib_linux::GetCurLogger().Debug_HEX(pData, nLen);
+#define INFO(format, args...)      lib_linux::GetCurLogger().Info(format"\n", ##args)
+#define WARNING(format, args...)   lib_linux::GetCurLogger().Warning(format"\n", ##args)
+#define ERROR(format, args...)     lib_linux::GetCurLogger().Error(format"\n", ##args)
 
 #endif

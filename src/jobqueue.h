@@ -18,7 +18,7 @@ namespace lib_linux
 
                 ~JobQueue()
                 {
-                    assert(m_queue.size() == 0);
+                    //assert(m_queue.size() == 0);
                 }
 
                 int Size()
