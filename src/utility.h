@@ -1,6 +1,11 @@
 #ifndef __UTILITY_H__
 #define __UTILITY_H__
 #include <sys/sysinfo.h>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <signal.h>
 #include <limits.h>
 #include <string>
 #include "lib_linux_config.h"
@@ -10,6 +15,88 @@ namespace lib_linux
     class Utility
     {
         public:
+            // just copy from apue
+            static bool Daemonize()
+            {
+                pid_t pid;
+                //struct rlimit    rl;
+                struct sigaction sa;
+
+                // clear file creation mask
+                umask(0);
+
+                //if (getrlimit(RLIMIT_NOFILE, &rl) < 0)
+                //{
+                //    return false;
+                //}
+
+                // become a session leader to lose controlling tty
+                if ((pid = fork()) < 0)
+                {
+                    return false;
+                }
+                else if (pid != 0)
+                {
+                    // parent
+                    exit(0);
+                }
+                
+                // create session
+                setsid();
+
+                // ensure future opens won't allocate controlling ttys.
+                sa.sa_handler = SIG_IGN;
+                sigemptyset(&sa.sa_mask);
+                sa.sa_flags = 0;
+                if (sigaction(SIGHUP, &sa, NULL) < 0)
+                {
+                    return false;
+                }
+                if ((pid = fork()) < 0)
+                {
+                    return false;
+                }
+                else if (pid != 0)
+                {
+                    // parent
+                    exit(0);
+                }
+
+                if (chdir("/") < 0)
+                {
+                    ERROR("chdir / fail\n");
+                    return false;
+                }
+
+                // close all open file descriptors
+                //if (rl.rlim_max == RLIM_INFINITY)
+                //{
+                //    rl.rlim_max = 1024;
+                //}
+                //for (unsigned int i=0; i < rl.rlim_max; i++)
+                //{
+                //    close(i);
+                //}
+                
+                // close stdin stdout stderr
+                close(0);
+                close(1);
+                close(2);
+
+                // attach file descriptores 0,1,2 to /dev/null
+                int fd0 = open("/dev/null", O_RDWR);
+                int fd1 = dup(0);
+                int fd2 = dup(0);
+                if (fd0 !=0 || fd1 != 1 || fd2 != 2)
+                {
+                    ERROR("daemon unexpected file descriptors as stdin stdout stderr");
+                    return false;
+                }
+
+                return true;
+            }
+
+
             // sleep unit is ms
             static void Sleep(int ms)
             {
