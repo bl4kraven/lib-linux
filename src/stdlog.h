@@ -42,12 +42,17 @@ namespace lib_linux
     class StdLog
     {
         public:
+            enum
+            {
+                BUFFER_SIZE = 256
+            };
+        public:
             StdLog(StdLogHandler *pHandler=NULL);
+            virtual ~StdLog();
 
             void SetHandler(StdLogHandler *pHandler);
             StdLogHandler *GetHandler();
             void SetLevel(int level);
-            void SetTime(bool bTime);
 
             void Debug_HEX(const char *pData, int nLen);
             void Debug(const char *format, ...);
@@ -64,8 +69,9 @@ namespace lib_linux
             // print level less or equal than this
             int m_level;
 
-            // output time
-            bool m_bTime;
+            // line buffer
+            char *m_pBuffer;
+            int m_bufSize;
     };
 }
 

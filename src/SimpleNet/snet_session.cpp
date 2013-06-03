@@ -47,7 +47,7 @@ namespace lib_linux
         // if the free memory is 0, realloc the memory
         if( len == 0 )
         {
-            _recvbuf.realloc( Buffer::SIZE );
+            _recvbuf.realloc();
             buf = _recvbuf.free_space();
             len = _recvbuf.free_size();
         }

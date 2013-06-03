@@ -92,9 +92,17 @@ namespace lib_linux
     // StdLog
     StdLog::StdLog(StdLogHandler *pHandler)
         :m_pHandler(pHandler),
-        m_level(LOG_LEVEL_DEBUG),
-        m_bTime(false)
+        m_level(LOG_LEVEL_DEBUG)
     {
+        m_bufSize = BUFFER_SIZE;
+        m_pBuffer = new char[m_bufSize];
+        memset(m_pBuffer, 0, m_bufSize);
+    }
+    
+    StdLog::~StdLog()
+    {
+        delete m_pBuffer;
+        m_pBuffer = NULL;
     }
 
     void StdLog::SetHandler(StdLogHandler *pHandler)
@@ -111,11 +119,6 @@ namespace lib_linux
     {
         assert(level >= LOG_LEVEL_ERROR && level <= LOG_LEVEL_DEBUG);
         m_level = level;
-    }
-
-    void StdLog::SetTime(bool bTime)
-    {
-        m_bTime = bTime;
     }
 
     void StdLog::Debug(const char * format, ...)
@@ -174,28 +177,47 @@ namespace lib_linux
             assert(level >= LOG_LEVEL_ERROR && level <= LOG_LEVEL_DEBUG);
             const char *str_level[] = {"ERROR", "WARN", "INFO", "DEBUG"};
 
-            if (m_bTime)
+            // convert time
+            struct timeval millsecond;
+            struct tm *timeinfo;
+            ::gettimeofday(&millsecond, 0);
+            timeinfo = ::localtime(&millsecond.tv_sec);
+
+            while (true)
             {
-                // convert time
-                struct timeval millsecond;
-                struct tm *timeinfo;
-                ::gettimeofday(&millsecond, 0);
-                timeinfo = ::localtime(&millsecond.tv_sec);
-                m_pHandler->WriteString(level, "[%-5s] [%02d:%02d:%02d:%03d] [%s] ",
-                                                str_level[level],
-                                                timeinfo->tm_hour,
-                                                timeinfo->tm_min,
-                                                timeinfo->tm_sec,
-                                                millsecond.tv_usec/1000,
-                                                (error == 0)?"OK":strerror(error));
+                int nFreeSize = m_bufSize;
+                int nLen = snprintf(m_pBuffer, nFreeSize, 
+                                    "[%-5s] [%02d:%02d:%02d:%03ld] [%s] ",
+                                    str_level[level],
+                                    timeinfo->tm_hour,
+                                    timeinfo->tm_min,
+                                    timeinfo->tm_sec,
+                                    millsecond.tv_usec/1000,
+                                    (error == 0)?"OK":strerror(error));
+
+                if (nLen > 0 && nLen < nFreeSize)
+                {
+                    nFreeSize -= nLen;
+                    nLen = vsnprintf(m_pBuffer+nLen, nFreeSize, format, arg);
+                    if (nLen > 0 && nLen < nFreeSize)
+                    {
+                        break;
+                    }
+                }
+
+                if (nLen <= 0)
+                {
+                    assert(0);
+                    return;
+                }
+
+                m_bufSize *= 2;
+                delete m_pBuffer;
+                m_pBuffer = new char[m_bufSize];
+                m_pHandler->WriteString(level, "stdlog line buffer size append %d\n", m_bufSize);
             }
-            else
-            {
-                m_pHandler->WriteString(level, "[%-5s] [%s] ",
-                                                str_level[level],
-                                                (error == 0)?"OK":strerror(error));
-            }
-            m_pHandler->Write(level, format, arg);
+
+            m_pHandler->WriteString(level, "%s", m_pBuffer);
         }
     }
 }

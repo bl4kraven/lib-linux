@@ -153,6 +153,21 @@ namespace lib_linux
                 nRet = val;
                 return true;
             }
+
+            static unsigned int next_pow_of_2(unsigned int x)
+            {
+                if (!(x & (x-1)))
+                {
+                    //is_pow_of_2
+                    return x;
+                }
+                x |= x>>1;
+                x |= x>>2;
+                x |= x>>4;
+                x |= x>>8;
+                x |= x>>16;
+                return x+1;
+            }
     };
 }
 

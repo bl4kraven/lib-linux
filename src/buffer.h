@@ -5,6 +5,7 @@
 #include <string.h>
 #include <assert.h>
 #include "lib_linux_config.h"
+#include "utility.h"
 
 namespace lib_linux
 {
@@ -62,27 +63,16 @@ namespace lib_linux
                 return *this;
             }
 
-            /// 
-            /// realloc the buffer
             ///
-            int realloc( int add_len )
+            /// realloc more nLen byte
+            ///
+            int realloc(int nLen = 0)
             {
-                assert(add_len > 0);
-                int new_size = 0;
-                if (add_len % SIZE == 0)
-                {
-                    new_size = add_len;
-                }
-                else
-                {
-                    new_size = add_len > SIZE ? (add_len/SIZE + 1)*SIZE : SIZE;
-                }
-                    
-                //_buf = (char*) ::realloc( _buf, add_len + _max_size );
-                _buf = (char*) ::realloc( _buf, new_size + _max_size );
-                _max_size += new_size;
-                //_max_size += add_len;
-                DEBUG("Buffer realloc add_len:%d new_size:%d afterall:%d", add_len, new_size, _max_size);
+                //_max_size + (nLen/_max_size + 1)*_max_size
+                // pow of 2, default is 2
+                _max_size *= Utility::next_pow_of_2(nLen/_max_size + 2);
+                _buf = (char*)::realloc(_buf, _max_size);
+                DEBUG("Buffer realloc size:%d", _max_size);
                 return _max_size;
             }
 
@@ -96,7 +86,7 @@ namespace lib_linux
                 if( _cur_pos + len > _max_size )
                 {
                     // not enough, realloc
-                    realloc(len);
+                    realloc();
                 }
 
                 // so the memory is enough, copy the data

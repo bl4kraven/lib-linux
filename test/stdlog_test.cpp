@@ -21,7 +21,7 @@ int main(int argc, char **argv)
         log.Warning("%s %d\n", "warning", 3);
         log.Error("%s %d\n", "error", 4);
 
-        SET_LOG(FLAG_SYSLOG | FLAG_TIME, ERROR);
+        SET_LOG(FLAG_SYSLOG, ERROR);
         DEBUG("%s %d", "debug", 1);
         INFO("%s %d", "info", 2);
         WARNING("%s %d", "warning", 3);

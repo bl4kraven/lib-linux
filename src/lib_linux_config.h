@@ -12,7 +12,6 @@
 namespace lib_linux
 {
     enum{
-        FLAG_TIME = 0x01,
         FLAG_COLOR = 0x02,
         FLAG_SYSLOG = 0x04,
         FLAG_NET = 0x08,

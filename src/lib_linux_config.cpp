@@ -23,20 +23,11 @@ namespace lib_linux
             Singleton<StdLog>::Instance()->SetHandler(Singleton<ColorDecoratorHandler>::Instance());
         }
 
-        if (flag & FLAG_TIME)
-        {
-            Singleton<StdLog>::Instance()->SetTime(true);
-        }
-        else
-        {
-            Singleton<StdLog>::Instance()->SetTime(false);
-        }
-
         return *Singleton<StdLog>::Instance();
     }
 
     // default
-    static int g_flag = FLAG_CON | FLAG_TIME | FLAG_COLOR;
+    static int g_flag = FLAG_CON | FLAG_COLOR;
     void SetLogger(int flag, int level)
     {
         assert((g_flag & FLAG_CON) || (g_flag & FLAG_SYSLOG));
