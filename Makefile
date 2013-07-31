@@ -1,9 +1,9 @@
 SRC_DIR=src src/SimpleNet
 
-CFLAGS+=-Wall -g -D_DEBUG
-#CFLAGS+=-Wall -O2
-CPPFLAGS+=-Wall -g -D_DEBUG
-#CPPFLAGS+=-Wall -O2
+#CFLAGS+=-Wall -g -D_DEBUG
+CFLAGS+=-Wall -O2
+#CPPFLAGS+=-Wall -g -D_DEBUG
+CPPFLAGS+=-Wall -O2
 CPPFLAGS+=-Isrc
 
 CFILES=$(shell find $(SRC_DIR)  -maxdepth 1 -name "*.c")

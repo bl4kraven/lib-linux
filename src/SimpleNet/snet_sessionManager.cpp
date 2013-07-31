@@ -15,7 +15,8 @@ namespace lib_linux
         ASSERT(_max_fd >= 1);
 
         // initial FD_SET array, default size is 64
-        _read_set.set_size(_max_fd);
+        // add listen fd
+        _read_set.set_size(_max_fd+1);
         _write_set.set_size(_max_fd);
         _error_set.set_size(_max_fd);
     }
