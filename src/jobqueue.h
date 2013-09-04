@@ -29,12 +29,12 @@ namespace lib_linux
 
                 void Push(T &elem)
                 {
-                    {
-                        // only enqueue in WaitPop called. 
-                        // see condition.h explain it.
-                        AutoLock lock(m_mutex);
-                        m_queue.push_back(elem);
-                    }
+                    //{
+                    // only enqueue in WaitPop called. 
+                    // see condition.h explain it.
+                    AutoLock lock(m_mutex);
+                    m_queue.push_back(elem);
+                    //}
 
                     // this only active one thread.
                     m_condition.Signal();

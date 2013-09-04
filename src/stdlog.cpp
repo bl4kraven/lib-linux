@@ -78,9 +78,7 @@ namespace lib_linux
                 m_pHandler->WriteString(level, "%s", "\033[0m");
                 break;
             case LOG_LEVEL_DEBUG:
-                m_pHandler->WriteString(level, "%s", "\033[1;38m");
                 m_pHandler->Write(level, format, arg);
-                m_pHandler->WriteString(level, "%s", "\033[0m");
                 break;
             default:
                 assert(0 && "illegal level");
@@ -179,21 +177,29 @@ namespace lib_linux
 
             // convert time
             struct timeval millsecond;
-            struct tm *timeinfo;
+            struct tm timeinfo;
             ::gettimeofday(&millsecond, 0);
-            timeinfo = ::localtime(&millsecond.tv_sec);
+            ::localtime_r(&millsecond.tv_sec, &timeinfo);
+            pthread_t tid = pthread_self();
+
+            char err_buffer[128] = "OK";
+            if (error != 0)
+            {
+                strerror_r(error, err_buffer, sizeof(err_buffer));
+            }
 
             while (true)
             {
                 int nFreeSize = m_bufSize;
                 int nLen = snprintf(m_pBuffer, nFreeSize, 
-                                    "[%-5s] [%02d:%02d:%02d:%03ld] [%s] ",
+                                    "[%-5s] [%02d:%02d:%02d:%03ld] [%s] [%04lu] ",
                                     str_level[level],
-                                    timeinfo->tm_hour,
-                                    timeinfo->tm_min,
-                                    timeinfo->tm_sec,
+                                    timeinfo.tm_hour,
+                                    timeinfo.tm_min,
+                                    timeinfo.tm_sec,
                                     millsecond.tv_usec/1000,
-                                    (error == 0)?"OK":strerror(error));
+                                    err_buffer,
+                                    tid%10000);
 
                 if (nLen > 0 && nLen < nFreeSize)
                 {
