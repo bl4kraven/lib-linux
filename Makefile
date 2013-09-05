@@ -40,14 +40,9 @@ $(CPPOBJS) $(TESTOBJS):%.o:%.cpp
 $(TESTAPP):%:%.o 
 	$(HOST)g++ -o $@ $< $(TARGET) -lpthread
 
-zip: TMPDIR:=$(shell mktemp -d)
-zip: CURDIR:=$(shell pwd)
 zip: 
-	mkdir $(TMPDIR)/$(ZIP_NAME)
-	cp --parent $(ZIP_FILES) $(TMPDIR)/$(ZIP_NAME)
 	-rm -rf $(ZIP_NAME).zip
-	cd $(TMPDIR) && zip -r $(CURDIR)/$(ZIP_NAME).zip $(ZIP_NAME)
-	-rm -rf $(TMPDIR)
+	zip -r $(ZIP_NAME).zip $(ZIP_FILES)
 
 clean:
 	-rm -f $(addsuffix /*.[do], $(SRC_DIR) test) $(TARGET) $(TESTAPP)
