@@ -18,12 +18,11 @@ namespace lib_linux
         FLAG_CON = 0x10,
     };
 
-    void SetLogger(int flag, int level);
+    void SetLogger(int flag=FLAG_CON|FLAG_COLOR, int level=lib_linux::LOG_LEVEL_DEBUG);
     StdLog &GetCurLogger();
 }
 
-#define SET_LOG(flag, level)        lib_linux::SetLogger(flag, lib_linux::LOG_LEVEL_##level)
-
+#define SET_LOG(flag, level)       lib_linux::SetLogger(flag, lib_linux::LOG_LEVEL_##level)
 #define DEBUG(format, args...)     lib_linux::GetCurLogger().Debug(format"\n", ##args)
 #define DEBUG_HEX(pData, nLen)     lib_linux::GetCurLogger().Debug_HEX(pData, nLen);
 #define INFO(format, args...)      lib_linux::GetCurLogger().Info(format"\n", ##args)

@@ -13,24 +13,17 @@
 class Serialport:public lib_linux::Thread
 {
     public:
-        enum
-        {
-            THREAD_READ,
-            NONE,
-        };
-
-    public:
-        Serialport(int mode=THREAD_READ)
+        Serialport(bool bThreadRead=true)
             :m_fd(-1),
             m_bRunFlag(false),
             m_nBaudRate(0),
-            m_mode(mode)
+            m_bThreadRead(bThreadRead)
         {
         }
 
         ~Serialport()
         {
-            if (m_mode == THREAD_READ)
+            if (m_bThreadRead)
             {
                 // waitting thread
                 m_bRunFlag = false;
@@ -116,7 +109,7 @@ class Serialport:public lib_linux::Thread
             // flush all read
             Flush();
 
-            if (m_mode == THREAD_READ)
+            if (m_bThreadRead)
             {
                 // open thread
                 m_bRunFlag = true;
@@ -321,8 +314,8 @@ class Serialport:public lib_linux::Thread
         volatile bool m_bRunFlag;
         // baudrate
         int m_nBaudRate;
-        // mode
-        int m_mode;
+        // thread read
+        bool m_bThreadRead;
 };
 
 #endif

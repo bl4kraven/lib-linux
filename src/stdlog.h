@@ -42,11 +42,6 @@ namespace lib_linux
     class StdLog
     {
         public:
-            enum
-            {
-                BUFFER_SIZE = 256
-            };
-        public:
             StdLog(StdLogHandler *pHandler=NULL);
             virtual ~StdLog();
 
@@ -68,10 +63,6 @@ namespace lib_linux
 
             // print level less or equal than this
             int m_level;
-
-            // line buffer
-            char *m_pBuffer;
-            int m_bufSize;
     };
 }
 

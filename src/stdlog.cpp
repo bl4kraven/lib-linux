@@ -92,15 +92,10 @@ namespace lib_linux
         :m_pHandler(pHandler),
         m_level(LOG_LEVEL_DEBUG)
     {
-        m_bufSize = BUFFER_SIZE;
-        m_pBuffer = new char[m_bufSize];
-        memset(m_pBuffer, 0, m_bufSize);
     }
     
     StdLog::~StdLog()
     {
-        delete m_pBuffer;
-        m_pBuffer = NULL;
     }
 
     void StdLog::SetHandler(StdLogHandler *pHandler)
@@ -188,42 +183,15 @@ namespace lib_linux
                 strerror_r(error, err_buffer, sizeof(err_buffer));
             }
 
-            while (true)
-            {
-                int nFreeSize = m_bufSize;
-                int nLen = snprintf(m_pBuffer, nFreeSize, 
-                                    "[%-5s] [%02d:%02d:%02d:%03ld] [%s] [%04lu] ",
-                                    str_level[level],
-                                    timeinfo.tm_hour,
-                                    timeinfo.tm_min,
-                                    timeinfo.tm_sec,
-                                    millsecond.tv_usec/1000,
-                                    err_buffer,
-                                    tid%10000);
-
-                if (nLen > 0 && nLen < nFreeSize)
-                {
-                    nFreeSize -= nLen;
-                    nLen = vsnprintf(m_pBuffer+nLen, nFreeSize, format, arg);
-                    if (nLen > 0 && nLen < nFreeSize)
-                    {
-                        break;
-                    }
-                }
-
-                if (nLen <= 0)
-                {
-                    assert(0);
-                    return;
-                }
-
-                m_bufSize *= 2;
-                delete m_pBuffer;
-                m_pBuffer = new char[m_bufSize];
-                m_pHandler->WriteString(level, "stdlog line buffer size append %d\n", m_bufSize);
-            }
-
-            m_pHandler->WriteString(level, "%s", m_pBuffer);
+            m_pHandler->WriteString(level, "[%-5s] [%02d:%02d:%02d:%03ld] [%s] [%04lu] ",
+                                            str_level[level],
+                                            timeinfo.tm_hour,
+                                            timeinfo.tm_min,
+                                            timeinfo.tm_sec,
+                                            millsecond.tv_usec/1000,
+                                            err_buffer,
+                                            tid%10000);
+            m_pHandler->Write(level, format, arg);
         }
     }
 }

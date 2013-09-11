@@ -4,39 +4,32 @@
 
 namespace lib_linux
 {
-    static StdLog &GetLogger(int flag)
+    void SetLogger(int flag, int level)
     {
+        assert((flag & FLAG_CON) || (flag & FLAG_SYSLOG));
+        StdLogHandler *pHandler = NULL;
         if (flag & FLAG_CON)
         {
             // stdout console
-            Singleton<StdLog>::Instance()->SetHandler(Singleton<StdLogOutHandler>::Instance());
+            pHandler = Singleton<StdLogOutHandler>::Instance();
         }
         else
         {
             // syslog
-            Singleton<StdLog>::Instance()->SetHandler(Singleton<SyslogHandler>::Instance());
+            pHandler = Singleton<SyslogHandler>::Instance();
         }
 
         if (flag & FLAG_COLOR)
         {
-            Singleton<ColorDecoratorHandler>::Instance()->SetHandler(Singleton<StdLog>::Instance()->GetHandler());
-            Singleton<StdLog>::Instance()->SetHandler(Singleton<ColorDecoratorHandler>::Instance());
+            Singleton<ColorDecoratorHandler>::Instance()->SetHandler(pHandler);
+            pHandler = Singleton<ColorDecoratorHandler>::Instance();
         }
-
-        return *Singleton<StdLog>::Instance();
-    }
-
-    // default
-    static int g_flag = FLAG_CON | FLAG_COLOR;
-    void SetLogger(int flag, int level)
-    {
-        assert((g_flag & FLAG_CON) || (g_flag & FLAG_SYSLOG));
-        g_flag = flag;
-        GetLogger(g_flag).SetLevel(level);
+        Singleton<StdLog>::Instance()->SetLevel(level);
+        Singleton<StdLog>::Instance()->SetHandler(pHandler);
     }
 
     StdLog &GetCurLogger()
     {
-        return GetLogger(g_flag);
+        return *Singleton<StdLog>::Instance();
     }
 }
