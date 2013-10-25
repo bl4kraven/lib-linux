@@ -110,7 +110,7 @@ namespace lib_linux
 
     void StdLog::SetLevel(int level)
     {
-        assert(level >= LOG_LEVEL_ERROR && level <= LOG_LEVEL_DEBUG);
+        //assert(level >= LOG_LEVEL_NONE && level <= LOG_LEVEL_DEBUG);
         m_level = level;
     }
 

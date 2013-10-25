@@ -6,6 +6,7 @@ namespace lib_linux
 {
     enum
     {
+        LOG_LEVEL_NONE = -1,
         LOG_LEVEL_ERROR = 0,
         LOG_LEVEL_WARNING,
         LOG_LEVEL_INFO,
