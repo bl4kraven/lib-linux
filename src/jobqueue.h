@@ -27,6 +27,12 @@ namespace lib_linux
                     return m_queue.size();
                 }
 
+                void Clear()
+                {
+                    AutoLock lock(m_mutex);
+                    m_queue.clear();
+                }
+
                 void Push(T &elem)
                 {
                     //{
@@ -43,7 +49,7 @@ namespace lib_linux
                 bool WaitPop(unsigned int unMilSecs, T &ret)
                 {
                     AutoLock lock(m_mutex);
-                    if (m_queue.size() == 0)
+                    if (m_queue.empty())
                     {
                         // call this will unlock mutex, so thread can push only this time.
                         if (!m_condition.Wait(m_mutex, unMilSecs))
@@ -52,9 +58,17 @@ namespace lib_linux
                         }
                     }
 
-                    ret = m_queue.front();
-                    m_queue.pop_front();
-                    return true;
+                    // check again
+                    if (!m_queue.empty())
+                    {
+                        ret = m_queue.front();
+                        m_queue.pop_front();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
 
             private:

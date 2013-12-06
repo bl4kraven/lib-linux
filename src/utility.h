@@ -4,6 +4,7 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <cstdlib>
 #include <fcntl.h>
 #include <signal.h>
 #include <limits.h>
@@ -40,7 +41,7 @@ namespace lib_linux
                     // parent
                     exit(0);
                 }
-                
+
                 // create session
                 setsid();
 
@@ -77,7 +78,7 @@ namespace lib_linux
                 //{
                 //    close(i);
                 //}
-                
+
                 // close stdin stdout stderr
                 close(0);
                 close(1);
@@ -167,6 +168,20 @@ namespace lib_linux
                 x |= x>>8;
                 x |= x>>16;
                 return x+1;
+            }
+
+            static bool system_check(const char *command)
+            {
+                sighandler_t old_handler = signal(SIGCHLD, SIG_DFL);
+                int status = ::system(command);
+                INFO("%s : system return %d", command, status);
+                if (-1 != status && WIFEXITED(status) && (0 == WEXITSTATUS(status)))
+                {
+                    signal(SIGCHLD, old_handler);
+                    return true;
+                }
+                signal(SIGCHLD, old_handler);
+                return false;
             }
     };
 }
