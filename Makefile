@@ -1,15 +1,9 @@
 SRC_DIR=src src/SimpleNet
 
-CFLAGS+=-Wall -g -D_DEBUG
-#CFLAGS+=-Wall -O2
 CPPFLAGS+=-Wall -g -D_DEBUG
 #CPPFLAGS+=-Wall -O2
 CPPFLAGS+=-Isrc -Isrc/SimpleNet
-
-CFILES:=$(shell find $(SRC_DIR)  -maxdepth 1 -name "*.c")
 CPPFILES:=$(shell find $(SRC_DIR)  -maxdepth 1 -name "*.cpp")
-
-COBJS:=$(CFILES:%.c=%.o) 
 CPPOBJS:=$(CPPFILES:%.cpp=%.o)
 TARGET:=liblinux_tool.a
 LIBS+=
@@ -28,11 +22,8 @@ test:$(TARGET) $(TESTAPP)
 -include $(addsuffix /*.d, $(SRC_DIR))
 -include $(addsuffix /*.d, test)
 
-$(TARGET):$(COBJS) $(CPPOBJS)
+$(TARGET):$(CPPOBJS)
 	$(HOST)ar cru $(TARGET) $^
-
-$(COBJS):%.o:%.c
-	$(HOST)gcc -c $(CFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
 
 $(CPPOBJS) $(TESTOBJS):%.o:%.cpp
 	$(HOST)g++ -c $(CPPFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
