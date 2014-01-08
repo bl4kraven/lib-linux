@@ -29,7 +29,7 @@ $(CPPOBJS) $(TESTOBJS):%.o:%.cpp
 	$(HOST)g++ -c $(CPPFLAGS) -MMD -MP -MF"$(@:%.o=%.d)" -o $@ $<
 
 $(TESTAPP):%:%.o 
-	$(HOST)g++ -o $@ $< $(TARGET) -lpthread
+	$(HOST)g++ -o $@ $< $(TARGET) -lpthread -ldl
 
 zip: 
 	-rm -rf $(ZIP_NAME).zip
