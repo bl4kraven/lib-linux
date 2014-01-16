@@ -28,7 +28,7 @@ namespace lib_linux
             virtual ~SessionManager();
 
             // startup server
-            bool StartupServer(SessionFactory *pFactory, unsigned short usPort);
+            bool StartupServer(SessionFactory *pFactory, const char *pstrIP, unsigned short usPort);
 
             // connect to the server, if connectes ok, it will create a session.
             ISession *Connect(SessionFactory &factory, const Address &remote_addr, bool bBlocking = true);

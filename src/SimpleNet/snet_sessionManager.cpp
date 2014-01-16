@@ -56,7 +56,7 @@ namespace lib_linux
         return SessionMapToList(_sessions);
     }
 
-    bool SessionManager::StartupServer(SessionFactory *pFactory, unsigned short usPort)
+    bool SessionManager::StartupServer(SessionFactory *pFactory, const char *pstrIP, unsigned short usPort)
     {
         // shutdown before start
         Shutdown();
@@ -70,7 +70,7 @@ namespace lib_linux
             return false;
         }
 
-        Address addr("0.0.0.0", usPort);
+        Address addr(pstrIP, usPort);
         if (!addr.is_valid())
         {
             return false;

@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 
     // Start chat server and listen at port 7777.
     // You can login by "telnet localhost 7777".
-    if (!manager.StartupServer(&sm, 7777))
+    if (!manager.StartupServer(&sm, "0.0.0.0", 7777))
     {
         return 1;
     }
