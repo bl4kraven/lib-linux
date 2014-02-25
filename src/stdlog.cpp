@@ -41,6 +41,7 @@ namespace lib_linux
         else
         {
             vfprintf(stdout, format, arg);
+            fflush(stdout);
         }
     }
 

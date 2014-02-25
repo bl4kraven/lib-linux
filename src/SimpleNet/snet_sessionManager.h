@@ -59,6 +59,8 @@ namespace lib_linux
             // put in list and later delete
             void Delete(ISession *pSession);
 
+            // delete session directly, use by connect non-block mode
+            void DeleteDirect(ISession *pSession);
         protected:
 
             // create a new session and save the session in the list.

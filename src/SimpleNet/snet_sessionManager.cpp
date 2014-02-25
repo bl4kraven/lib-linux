@@ -331,6 +331,16 @@ namespace lib_linux
         _delete_sessions[pSession->getid()] = pSession;
     }
 
+
+    void SessionManager::DeleteDirect(ISession *pSession)
+    {
+        assert(pSession != NULL && _sessions.count(pSession->getid()) > 0);
+        // delete session
+        _sessions.erase(pSession->getid());
+        pSession->OnDisconnect(this);
+        delete pSession;
+    }
+
     bool SessionManager::NewSession()
     {
         ASSERT(m_pFactoryServSession && "No server session factory method set");

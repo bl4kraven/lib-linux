@@ -56,19 +56,18 @@ namespace lib_linux
             }
         }
 
-        Address get_host_name(const char *pName)
+        static Address get_host_name(const char *pName)
         {
             struct hostent *pHost = ::gethostbyname(pName);
             if (pHost == NULL)
             {
-                OnError(WSAGetLastError(), "gethostbyname error");
+                //OnError(WSAGetLastError(), "gethostbyname error");
                 return Address();
             }
 
-
             if (pHost->h_addrtype != AF_INET)
             {
-                OnError(WSAGetLastError(), "gethostbyname return ipv6 address, not support");
+                //OnError(WSAGetLastError(), "gethostbyname return ipv6 address, not support");
                 return Address();
             }
 
