@@ -230,7 +230,7 @@ namespace lib_linux
             ASSERT(is_valid());
 
             // open keepalivetimer
-            DWORD dwKeepTimer = 1;
+            unsigned int dwKeepTimer = 1;
             ::setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, (char *)&dwKeepTimer, sizeof(dwKeepTimer));
 
 #if defined(_WIN32)
@@ -241,10 +241,10 @@ namespace lib_linux
             // interval of ack
             time.keepaliveinterval = 1000;
 
-            DWORD dwkeepliveLen = sizeof(tcp_keepalive);
+            unsigned int dwkeepliveLen = sizeof(tcp_keepalive);
 
             // setting
-            DWORD dwReturn;
+            unsigned int dwReturn;
             int ret = ::WSAIoctl(_socket, SIO_KEEPALIVE_VALS, &time, dwkeepliveLen, NULL, 0, &dwReturn, NULL, NULL);
             if (ret == SOCKET_ERROR)
             {

@@ -25,7 +25,6 @@
     #include <string.h>
     #include <stdarg.h>
 
-    #define DWORD unsigned int
     #define SOCKET int
     #define SOCKET_LEN_TYPE socklen_t
     #define INVALID_SOCKET (-1)
