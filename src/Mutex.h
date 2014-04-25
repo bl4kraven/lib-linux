@@ -24,6 +24,11 @@ namespace lib_linux
                 ::pthread_mutex_lock(&m_mutex);
             }
 
+            bool TryLock()
+            {
+                return ::pthread_mutex_trylock(&m_mutex) == 0;
+            }
+
             void UnLock()
             {
                 ::pthread_mutex_unlock(&m_mutex);
