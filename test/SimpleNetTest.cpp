@@ -14,27 +14,27 @@ class MySession:public ISession
     protected:
         void OnConnect(SessionManager *pSessionManager)
         {
-            cout<<get_peer_addr().get_ip().c_str()<<"new session join in, online sessions:"
-                <<pSessionManager->GetSessionCount()<<endl;
+            //cout<<get_peer_addr().get_ip().c_str()<<"new session join in, online sessions:"
+            //    <<pSessionManager->GetSessionCount()<<endl;
 
-            std::string str("Welcome to lbzhung's chat server:D\r\n");
-            send(str.c_str(), str.length());
+            //std::string str("Welcome to lbzhung's chat server:D\r\n");
+            //send(str.c_str(), str.length());
         }
 
         void OnDisconnect(SessionManager *pSessionManager)
         {
-            cout<<get_peer_addr().get_ip().c_str()<<"exit, online sessions:"
-                <<pSessionManager->GetSessionCount()-1<<endl;
+            //cout<<get_peer_addr().get_ip().c_str()<<"exit, online sessions:"
+            //    <<pSessionManager->GetSessionCount()-1<<endl;
         }
 
         void OnRead(SessionManager *pSessionManager)
         {
-            char buffer[101];
+            char buffer[256];
             string strCur;
 
             while (true)
             {
-                int nLen = recv(buffer, 100);
+                int nLen = recv(buffer, sizeof(buffer)-1);
                 if (nLen <= 0)
                 {
                     break;
@@ -49,7 +49,6 @@ class MySession:public ISession
 
         void OnError(SessionManager *pSessionManager, int nErrorCode, const char *pStr)
         {
-            ERROR("ErrorCode:%d  %s", nErrorCode, pStr);
         }
 };
 
@@ -59,18 +58,62 @@ static void onsig(int dummy)
     is_exit = true;
 }
 
+void usage(const char *pstrProgram)
+{
+    printf("Usage:\n"
+           "  %s -p port \n"
+           "     -d daemon\n", pstrProgram);
+}
+
 int main(int argc, char* argv[])
 {
+    int opt = -1;
+    int nPort = -1;
+    bool isDaemon = false;
+    while ((opt = getopt(argc, argv, "hdp:")) != -1)
+    {
+        switch (opt)
+        {
+            case 'd':
+                isDaemon = true;
+                break;
+            case 'p':
+                nPort = atoi(optarg);
+                break;
+            case 'h':
+                usage(argv[0]);
+                return 0;
+            default: /* '?' */
+                usage(argv[0]);
+                return -1;
+        }
+    } 
+
+    if (nPort == -1)
+    {
+        usage(argv[0]);
+        return -1;
+    }
+
     ::signal(SIGHUP, onsig);
     ::signal(SIGINT, onsig);
     ::signal(SIGTERM, onsig);
 
+    if (isDaemon)
+    {
+        // daemonize
+        if (!lib_linux::Utility::Daemonize())
+        {
+            return -1;
+        }
+    }
+
     SessionFactoryImp<MySession> sm;
     SessionManager manager(10);
 
-    // Start chat server and listen at port 7777.
-    // You can login by "telnet localhost 7777".
-    if (!manager.StartupServer(&sm, "0.0.0.0", 7777))
+    // Start chat server and listen at port.
+    // You can login by "telnet localhost port".
+    if (!manager.StartupServer(&sm, "0.0.0.0", nPort))
     {
         return 1;
     }
