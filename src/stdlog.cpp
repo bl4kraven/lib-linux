@@ -123,7 +123,7 @@ namespace lib_linux
         ::va_end(args);
     }
 
-    void StdLog::Debug_HEX(const char *pData, int nLen)
+    void StdLog::Debug_HEX(const char *pData, int nLen, const char *pstrPrefix, const char *pstrSuffix)
     {
         std::stringstream stream_hex;
 
@@ -135,7 +135,14 @@ namespace lib_linux
             stream_hex<<std::setfill('0')<<std::setw(2)<<(int)(unsigned char)(pData[iter])<<" ";
         }
 
-        Debug("%s\n", stream_hex.str().c_str());
+        if (pstrPrefix && pstrSuffix)
+        {
+            Debug("%s%s%s\n", pstrPrefix, stream_hex.str().c_str(), pstrSuffix);
+        }
+        else
+        {
+            Debug("%s\n", stream_hex.str().c_str());
+        }
     }
 
     void StdLog::Info(const char * format, ...)

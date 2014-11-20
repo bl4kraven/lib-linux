@@ -86,7 +86,7 @@ namespace lib_linux
                 if( _cur_pos + len > _max_size )
                 {
                     // not enough, realloc
-                    realloc();
+                    realloc(_cur_pos+len);
                 }
 
                 // so the memory is enough, copy the data

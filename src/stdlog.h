@@ -8,9 +8,9 @@ namespace lib_linux
     {
         LOG_LEVEL_NONE = -1,
         LOG_LEVEL_ERROR = 0,
-        LOG_LEVEL_WARNING,
-        LOG_LEVEL_INFO,
-        LOG_LEVEL_DEBUG
+        LOG_LEVEL_WARNING = 1,
+        LOG_LEVEL_INFO = 2,
+        LOG_LEVEL_DEBUG = 3,
     };
 
     class StdLogHandler
@@ -50,7 +50,7 @@ namespace lib_linux
             StdLogHandler *GetHandler();
             void SetLevel(int level);
 
-            void Debug_HEX(const char *pData, int nLen);
+            void Debug_HEX(const char *pData, int nLen, const char *pstrPrefix=NULL, const char *pstrSuffix=NULL);
             void Debug(const char *format, ...);
             void Info(const char *format, ...);
             void Warning(const char *format, ...);

@@ -49,6 +49,7 @@ class MySession:public ISession
 
         void OnError(SessionManager *pSessionManager, int nErrorCode, const char *pStr)
         {
+            printf("error: %s\n", pStr);
         }
 };
 
@@ -120,9 +121,10 @@ int main(int argc, char* argv[])
 
     while (!is_exit)
     {
-        timeval timeout = { 1, 0 };
+        timeval timeout = { 0, 0};
         manager.Poll(timeout);
         usleep(10*1000);
+        manager.Broadcast("hello", 5);
     }
 
     return 0;
