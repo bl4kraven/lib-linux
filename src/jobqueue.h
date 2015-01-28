@@ -18,6 +18,7 @@ namespace lib_linux
 
                 ~JobQueue()
                 {
+                    //DEBUG("JobQueue destory");
                     //assert(m_queue.size() == 0);
                 }
 
@@ -35,6 +36,7 @@ namespace lib_linux
 
                 void Push(T &elem)
                 {
+                    //DEBUG("JobQueue Push");
                     //{
                     // only enqueue in WaitPop called. 
                     // see condition.h explain it.

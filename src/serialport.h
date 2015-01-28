@@ -23,6 +23,15 @@ class Serialport:public lib_linux::Thread
 
         ~Serialport()
         {
+            if (IsOpen())
+            {
+                WARNING("must close serialport before exit");
+                Close();
+            }
+        }
+
+        void Close()
+        {
             if (m_bThreadRead)
             {
                 // waitting thread
