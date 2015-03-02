@@ -183,6 +183,28 @@ namespace lib_linux
                 signal(SIGCHLD, old_handler);
                 return false;
             }
+
+            static bool system_exec(const char *command, std::string &ret)
+            {
+                sighandler_t old_handler = signal(SIGCHLD, SIG_DFL);
+                FILE *p = ::popen(command, "r");
+                if (!p)
+                {
+                    signal(SIGCHLD, old_handler);
+                    return false;
+                }
+
+                char buffer[128];
+                ::memset(buffer, 0, sizeof(buffer));
+                while (!::feof(p))
+                {
+                    if (::fgets(buffer, 128, p) != NULL)
+                        ret += buffer;
+                }
+                ::pclose(p);
+                signal(SIGCHLD, old_handler);
+                return true;
+            }
     };
 }
 

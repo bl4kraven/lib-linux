@@ -14,12 +14,15 @@ namespace lib_linux
         public:
             Condition()
             {
-                ::pthread_cond_init(&m_cond, NULL);
+                ::pthread_condattr_init(&m_attr);                                                  
+                ::pthread_condattr_setclock(&m_attr, CLOCK_MONOTONIC);                             
+                ::pthread_cond_init(&m_cond, &m_attr);
             }
 
             ~Condition()
             {
                 ::pthread_cond_destroy(&m_cond);
+                ::pthread_condattr_destroy(&m_attr);
             }
 
             // wait block condition and unlock mutex. so mutex and conditon are this:
@@ -41,20 +44,15 @@ namespace lib_linux
             bool Wait(Mutex &mutex, unsigned int unMilSec)
             {
                 struct timespec ts;
-                struct timeval tv;
-                struct timezone tz;
-                unsigned int sec, usec;
+                ::clock_gettime(CLOCK_MONOTONIC, &ts);
 
-                gettimeofday(&tv, &tz);
+                unsigned int sec, usec;
                 sec = unMilSec / 1000;
                 usec = (unMilSec % 1000) * 1000;
 
-                assert(tv.tv_usec < 1000000);
+                ts.tv_sec += sec;
+                ts.tv_nsec += (usec*1000);
 
-                ts.tv_sec = tv.tv_sec + sec;
-                ts.tv_nsec = (tv.tv_usec + usec) * 1000;
-
-                assert(ts.tv_nsec < 2000000000);
                 if(ts.tv_nsec > 999999999)
                 {
                     ts.tv_sec++;
@@ -75,7 +73,8 @@ namespace lib_linux
             }
 
         private:
-            pthread_cond_t m_cond;
+            pthread_condattr_t m_attr;
+            pthread_cond_t     m_cond;
     };
 }
 

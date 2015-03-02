@@ -134,6 +134,7 @@ namespace lib_linux
             }
             else
             {
+                ERROR("Connect numbers exceed max");
                 session->OnError(this, WSAGetLastError(), "Connect numbers exceed max");
             }
         }
@@ -230,6 +231,7 @@ namespace lib_linux
             // new connection comes ?
             if (_listen.is_valid() &&  _read_set.is_set( _listen.query_socket() ) )
             {
+                DEBUG("new session");
                 NewSession();
             }
 
@@ -246,8 +248,10 @@ namespace lib_linux
                     int nReturn = session->do_recv();
                     if (nReturn <= 0 )
                     {
+                        DEBUG("session close connection");
                         if (nReturn == SOCKET_ERROR)
                         {
+                            ERROR("socket wrong and close connection");
                             session->OnError(this, WSAGetLastError(), "socket wrong and close connection" );
                         }
 
@@ -273,6 +277,7 @@ namespace lib_linux
                 if (_error_set.is_set(s)) // error
                 {
                     _nbconnect_sessions.erase(session->getid());
+                    ERROR("connection non-blocking socket error");
                     session->OnError(this, WSAGetLastError(), "connection non-blocking socket error");
                     delete session;
                 }
@@ -286,6 +291,7 @@ namespace lib_linux
                     if (err)
                     {
                         _nbconnect_sessions.erase(session->getid());
+                        ERROR("connection non-blocking socket error");
                         session->OnError(this, WSAGetLastError(), "connection non-blocking socket error");
                         delete session;
                     }
@@ -358,6 +364,7 @@ namespace lib_linux
             }
             else
             {
+                ERROR("accept numbers excced max");
                 session->OnError(this, WSAGetLastError(), "accept numbers excced max");
             }
         }

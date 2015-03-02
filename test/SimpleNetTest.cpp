@@ -14,8 +14,8 @@ class MySession:public ISession
     protected:
         void OnConnect(SessionManager *pSessionManager)
         {
-            //cout<<get_peer_addr().get_ip().c_str()<<"new session join in, online sessions:"
-            //    <<pSessionManager->GetSessionCount()<<endl;
+            cout<<get_peer_addr().get_ip().c_str()<<"new session join in, online sessions:"
+                <<pSessionManager->GetSessionCount()<<endl;
 
             //std::string str("Welcome to lbzhung's chat server:D\r\n");
             //send(str.c_str(), str.length());
@@ -23,8 +23,8 @@ class MySession:public ISession
 
         void OnDisconnect(SessionManager *pSessionManager)
         {
-            //cout<<get_peer_addr().get_ip().c_str()<<"exit, online sessions:"
-            //    <<pSessionManager->GetSessionCount()-1<<endl;
+            cout<<get_peer_addr().get_ip().c_str()<<"exit, online sessions:"
+                <<pSessionManager->GetSessionCount()-1<<endl;
         }
 
         void OnRead(SessionManager *pSessionManager)
@@ -100,6 +100,9 @@ int main(int argc, char* argv[])
     ::signal(SIGINT, onsig);
     ::signal(SIGTERM, onsig);
 
+    // socket send will throw SIGPIPE if remote is close
+    ::signal(SIGPIPE, SIG_IGN);
+
     if (isDaemon)
     {
         // daemonize
@@ -108,6 +111,8 @@ int main(int argc, char* argv[])
             return -1;
         }
     }
+
+    SET_LOG(lib_linux::FLAG_CON | lib_linux::FLAG_COLOR, DEBUG);
 
     SessionFactoryImp<MySession> sm;
     SessionManager manager(10);
@@ -124,7 +129,11 @@ int main(int argc, char* argv[])
         timeval timeout = { 0, 0};
         manager.Poll(timeout);
         usleep(10*1000);
-        manager.Broadcast("hello", 5);
+
+        for (int i=0; i<204; i++)
+        {
+            manager.Broadcast("hello", 5);
+        }
     }
 
     return 0;
